@@ -41,9 +41,9 @@ async function start() {
       else msgDebug = (message.message?.extendedTextMessage?.text || message.message?.conversation)
       console.log(`Message from ${message.pushName}: ${msgDebug}`)
       
-
+      if (!msgDebug) {return}
       const response = await process (room, sender, msgDebug, quoted)
-      if (!response) return
+      if (!response) {return}
       
       for (let r of response) {
         if (typeof r === 'string') {await sock.sendMessage(room, {text:r})}
@@ -58,14 +58,13 @@ start()
 async function process (room, sender, msg, quoted) {
   const prefix = '!'
   
-  if (!msg.startsWith(prefix)) return
-  if (msg.length <= 1) return
+  if (!msg.startsWith(prefix)) {return}
+  if (msg.length <= 1) {return}
   const inputs = msg.split(' ')
   const command = inputs[0].slice(1).toLowerCase()
-  if (!command) return [`⚠ Mohon perhatikan penulisan perintah bot yang benar.\nContoh: ${prefix}menu`]
+  if (!command) {return [`⚠ Mohon perhatikan penulisan perintah bot yang benar.\nContoh: ${prefix}menu`]}
   const params = inputs.slice(1)
   
   
   
 }
-a
