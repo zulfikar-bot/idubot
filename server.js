@@ -27,11 +27,11 @@ async function start() {
   sock.ev.on('messages.upsert', update => {
     if (update.type !== 'notify') return
     for (let message of update.messages) {
-      console.log(message.message)
+      console.log(message)
       let msgDebug
       if (message.message.imageMessage) msgDebug = '[IMAGE] '+message.message.imageMessage.caption
       else if (message.message.audioMessage) msgDebug = '[AUDIO]'
-      else if (message.message.extendedTextMessage) msgDebug = message.message.extendedTextMessage.text
+      else msgDebug = (message.message.extendedTextMessage?.text || message.message.conversation)
       console.log(`Message from ${message.pushName}: ${msgDebug}`)
     }
   })
