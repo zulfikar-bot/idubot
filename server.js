@@ -1,6 +1,6 @@
 const http = require('http')
 const fs = require('fs')
-const port = process.env.PORT || 3000
+const port = process.env?.PORT || 3000
 
 const baileys = require('@adiwajshing/baileys')
 const {useMultiFileAuthState} = baileys
@@ -29,20 +29,21 @@ async function start() {
     await sock.readMessages(update.messages.filter(m=>m.key.remoteJid!=='status@broadcast').map(m=>m.key))
     for (let message of update.messages) {
       //console.log(message)
-      if (room === 'status@broadcast') continue
       if (message.key.fromMe) continue
       const room = message.key.remoteJid
+      if (room === 'status@broadcast') continue
       const sender = message.key.participant
       const quoted = message.message?.extendedTextMessage?.contextInfo?.quotedMessage?.conversation ||
                     message.message?.extendedTextMessage?.contextInfo?.quotedMessage?.extendedTextMessage?.text
       let msgDebug
-      if (message.message.imageMessage) msgDebug = '[IMAGE] '+message.message.imageMessage.caption
-      else if (message.message.audioMessage) msgDebug = '[AUDIO]'
-      else msgDebug = (message.message.extendedTextMessage?.text || message.message.conversation)
+      if (message.message?.imageMessage) msgDebug = '[IMAGE] '+message.message?.imageMessage.caption
+      else if (message.message?.audioMessage) msgDebug = '[AUDIO]'
+      else msgDebug = (message.message?.extendedTextMessage?.text || message.message?.conversation)
       console.log(`Message from ${message.pushName}: ${msgDebug}`)
       
 
       const response = await process (room, sender, msgDebug, quoted)
+      if (!response) return
       
       for (let r of response) {
         if (typeof r === 'string') {await sock.sendMessage(room, {text:r})}
@@ -60,7 +61,7 @@ async function process (room, sender, msg, quoted) {
   if (!msg.startsWith(prefix)) return
   if (msg.length <= 1) return
   const inputs = msg.split(' ')
-  const command = inputs[0].split(1).toLowerCase()
+  const command = inputs[0].slice(1).toLowerCase()
   if (!command) return [`⚠ Mohon perhatikan penulisan perintah bot yang benar.\nContoh: ${prefix}menu`]
   const params = inputs.slice(1)
   
