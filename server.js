@@ -1,5 +1,6 @@
 const http = require('http')
 const fs = require('fs')
+const {randomInt} = require('crypto')
 
 const baileys = require('@adiwajshing/baileys')
 const {useMultiFileAuthState} = baileys
@@ -57,6 +58,10 @@ async function start() {
 start()
 
 // BOT CONTROL
+const cmdList = [
+  {name:'ping', info:'Tes respon bot', run:()=>[choose('Pong','Halo','Hadir','Aktif')]}
+]
+
 async function processCommand (room, sender, msg, quoted) {
   const prefix = '!'
   
@@ -65,8 +70,15 @@ async function processCommand (room, sender, msg, quoted) {
   const inputs = msg.split(' ')
   const command = inputs[0].slice(1).toLowerCase()
   if (!command) {return [`⚠ Mohon perhatikan penulisan perintah bot yang benar.\nContoh: ${prefix}menu`]}
+  if (!cmdList.find(c=>c.name===command)) {return [`⚠ Perintah *${command}* tidak ada. Ketik ${prefix}menu untuk melihat daftar perintah yang ada.`]}
   const params = inputs.slice(1)
-
   
+  return cmdList.find(c=>c.name===command)
+ 
 }
+
+function choose() {
+  return arguments[randomInt(arguments.length)]
+}
+
 a
