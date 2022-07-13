@@ -1,6 +1,6 @@
 const http = require('http')
 const fs = require('fs')
-const port = process.env.PORT
+const port = process.env.PORT || 3000
 
 const baileys = require('@adiwajshing/baileys')
 const {useMultiFileAuthState} = baileys
@@ -41,11 +41,11 @@ async function start() {
       else msgDebug = (message.message.extendedTextMessage?.text || message.message.conversation)
       console.log(`Message from ${message.pushName}: ${msgDebug}`)
       
-      const response 
+
       const response = await process (room, sender, msgDebug, quoted)
       
       for (let r of response) {
-        if (typeof r === 'string') {}
+        if (typeof r === 'string') {await sock.sendMessage(room, {text:r})}
       }
     }
   })
@@ -60,7 +60,7 @@ async function process (room, sender, msg, quoted) {
   if (!msg.startsWith(prefix)) return
   if (msg.length <= 1) return
   const inputs = msg.split(' ')
-  const command = inputs[0]
+  const command = inputs[0].split(1).toLowerCase()
   if (!command) return [`⚠ Mohon perhatikan penulisan perintah bot yang benar.\nContoh: ${prefix}menu`]
   const params = inputs.slice(1)
   
