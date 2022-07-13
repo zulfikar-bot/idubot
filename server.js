@@ -55,9 +55,11 @@ async function start() {
   })
 }
 
+// Belajar Bahasa Asing
+const lessonList = ['en','ja','de','es']
+
 // BOT CONTROL
 const prefix = '!'
-
 const cmdList = [
   {name:'ping', info:'Tes respon bot', run:()=>[choose('Pong','Halo','Hadir','Aktif')]},
   {name:'menu', info:'Tampilkan menu ini', run:()=>{return [
@@ -68,7 +70,9 @@ const cmdList = [
   
   {section:'Belajar Bahasa Asing'},
   {name:'sub', info:'Berlangganan pelajaran bahasa Asing (untuk grup)', run:(p)=>{
-    
+    const code = p[0]
+    if (!code) {return [`⚠ Sertakan dengan kode bahasa pelajaran. (${lessonList.join(', ')})\nContoh: ${prefix}sub ${lessonList[0]}`]}
+    if (!lessonList.includes(code)) {return [`⚠ Kode bahasa *${code}* tidak dikenali. Kode yang ada: ${lessinList.join(', '`]}
   }}
 ]
 
