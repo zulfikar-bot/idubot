@@ -3,7 +3,7 @@ const fs = require('fs')
 const {randomInt} = require('crypto')
 
 const baileys = require('@adiwajshing/baileys')
-const {useMultiFileAuthState} = baileys
+const {useMultiFileAuthState, isJidGroup} = baileys
 
 const port = process.env.PORT || 3000
 const owner = process.env.OWNER
@@ -56,7 +56,9 @@ async function start() {
 }
 
 // Belajar Bahasa Asing
-const lessonList = ['en','ja','de','es']
+const lessonList = {
+  en:'English', ja:'Nihon-go', de:'Deutsch', es:'Español'
+}
 
 // BOT CONTROL
 const prefix = '!'
@@ -71,11 +73,13 @@ const cmdList = [
   {section:'Belajar Bahasa Asing'},
   {name:'sub', info:'Berlangganan pelajaran bahasa Asing (untuk grup)', run:(p)=>{
     const code = p[0]
-    if (!code) {return [`⚠ Sertakan dengan kode bahasa pelajaran. (${lessonList.join(', ')})\nContoh: ${prefix}sub ${lessonList[0]}`]}
-    if (!lessonList.includes(code)) {return [`⚠ Kode bahasa *${code}* tidak dikenali. Kode yang ada: ${lessinList.join(', '`]}
+    const codelist = Object.keys(lessonList).join(', ')
+    if (!code) {return [`⚠ Sertakan dengan kode bahasa pelajaran. (${codelist})\nContoh: ${prefix}sub ${Object.keys(lessonList)[0]}`]}
+    if (!Object.keys(lessonList).includes(code)) {return [`⚠ Kode bahasa *${code}* tidak dikenali. Kode yang ada: ${codelist}`]}
+    return [`✅ Grup ini telah berlangganan materi ${lessonList[code]}`]
   }}
 ]
-
+a
 start()
 
 async function processCommand (room, sender, msg, quoted) {
@@ -87,7 +91,7 @@ async function processCommand (room, sender, msg, quoted) {
   if (!cmdList.find(c=>c.name===command)) {return [`⚠ Perintah *${command}* tidak ada. Ketik ${prefix}menu untuk melihat daftar perintah yang ada.`]}
   const params = inputs.slice(1)
   
-  return cmdList.find(c=>c.name===command).run(params)
+  return cmdList.find(c=>c.name===command).run(room,sender,params,quoted)
  
 }
 
@@ -95,4 +99,3 @@ function choose() {
   return arguments[randomInt(arguments.length)]
 }
 
-a
