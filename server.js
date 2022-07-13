@@ -1,14 +1,11 @@
-const { Client } = require('whatsapp-web.js');
-const client = new Client({
-  puppeteer:
-});
+const http = require('http')
+const port = process.env.PORT
 
-client.on('qr', (qr) => {
-    console.log('QR RECEIVED', qr);
-});
+const baileys = require('@adiwajshing/baileys')
 
-client.on('ready', () => {
-    console.log('Client is ready!');
-});
+http.createServer((_,res) => {
+  res.end('Server is running')
+}).listen(port)
+console.log('Server runs at port',port)
 
-client.initialize();
+console.log(typeof baile)
