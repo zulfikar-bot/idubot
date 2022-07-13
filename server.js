@@ -71,8 +71,9 @@ const cmdList = [
   ]}},
   
   {section:'Belajar Bahasa Asing'},
-  {name:'sub', info:'Berlangganan pelajaran bahasa Asing (untuk grup)', run:(p)=>{
-    const code = p[0]
+  {name:'sub', info:'Berlangganan pelajaran bahasa Asing (untuk grup)', adminOnly:true, run:(room,sender,param)=>{
+    if (!isJidGroup(room)) {return ['⚠ Perintah tersebut hanya berlaku di dalam grup']}
+    const code = param[0]
     const codelist = Object.keys(lessonList).join(', ')
     if (!code) {return [`⚠ Sertakan dengan kode bahasa pelajaran. (${codelist})\nContoh: ${prefix}sub ${Object.keys(lessonList)[0]}`]}
     if (!Object.keys(lessonList).includes(code)) {return [`⚠ Kode bahasa *${code}* tidak dikenali. Kode yang ada: ${codelist}`]}
