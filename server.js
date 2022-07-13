@@ -58,13 +58,18 @@ async function start() {
 start()
 
 // BOT CONTROL
+const prefix = '!'
+
 const cmdList = [
-  {name:'ping', info:'Tes respon bot', run:()=>[choose('Pong','Halo','Hadir','Aktif')]}
+  {name:'ping', info:'Tes respon bot', run:()=>[choose('Pong','Halo','Hadir','Aktif')]},
+  {name:'menu', info:'Tampilkan menu ini', run:()=>{return [
+    '*MENU IDUBOT*\n============\n\n'+
+    cmdList.map(c=>prefix+c.name+' - '+c.info).join('\n')+
+    `\n\nKontak owner: +${owner}`
+  ]}}
 ]
 
 async function processCommand (room, sender, msg, quoted) {
-  const prefix = '!'
-  
   if (!msg.startsWith(prefix)) {return}
   if (msg.length <= 1) {return}
   const inputs = msg.split(' ')
@@ -73,7 +78,7 @@ async function processCommand (room, sender, msg, quoted) {
   if (!cmdList.find(c=>c.name===command)) {return [`⚠ Perintah *${command}* tidak ada. Ketik ${prefix}menu untuk melihat daftar perintah yang ada.`]}
   const params = inputs.slice(1)
   
-  return cmdList.find(c=>c.name===command)
+  return cmdList.find(c=>c.name===command).run(params)
  
 }
 
@@ -81,4 +86,3 @@ function choose() {
   return arguments[randomInt(arguments.length)]
 }
 
-a
