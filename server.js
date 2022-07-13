@@ -57,7 +57,10 @@ async function start() {
 
 // Belajar Bahasa Asing
 const lessonList = {
-  en:'English', ja:'Nihon-go', de:'Deutsch', es:'Español'
+  en:{name:'English',subbers:[], 
+  ja:'Nihon-go', 
+  de:'Deutsch', 
+  es:'Español'
 }
 
 // BOT CONTROL
