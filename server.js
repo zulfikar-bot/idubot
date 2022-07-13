@@ -29,8 +29,12 @@ async function start() {
     await sock.readMessages(update.messages.filter(m=>m.key.remoteJid!=='status@broadcast').map(m=>m.key))
     for (let message of update.messages) {
       //console.log(message)
-      if (message.key.remoteJid === 'status@broadcast') continue
+      if (room === 'status@broadcast') continue
       if (message.key.fromMe) continue
+      const room = message.key.remoteJid
+      const sender = message.key.participant
+      const quoted = message.message?.extendedTextMessage?.contextInfo?.quotedMessage?.conversation ||
+                    message.message?.extendedTextMessage?.contextInfo?.quotedMessage?.extendedTextMessage?.text
       let msgDebug
       if (message.message.imageMessage) msgDebug = '[IMAGE] '+message.message.imageMessage.caption
       else if (message.message.audioMessage) msgDebug = '[AUDIO]'
@@ -38,6 +42,11 @@ async function start() {
       console.log(`Message from ${message.pushName}: ${msgDebug}`)
       
       const response 
+      const response = await process (room, sender, msgDebug, quoted)
+      
+      for (let r of response) {
+        if (typeof r === 'string') {}
+      }
     }
   })
 }
@@ -53,5 +62,8 @@ async function process (room, sender, msg, quoted) {
   const inputs = msg.split(' ')
   const command = inputs[0]
   if (!command) return [`⚠ Mohon perhatikan penulisan perintah bot yang benar.\nContoh: ${prefix}menu`]
+  const params = inputs.slice(1)
+  
+  if (command === 'test') return ['Message from Glitch server']
   
 }
