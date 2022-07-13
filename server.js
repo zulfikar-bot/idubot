@@ -44,7 +44,7 @@ async function start() {
       console.log(`Message from ${message.pushName}: ${msgDebug}`)
       
       if (!msgDebug) {return}
-      const response = await process (room, sender, msgDebug, quoted)
+      const response = await processCommand(room, sender, msgDebug, quoted)
       if (!response) {return}
       
       for (let r of response) {
@@ -57,7 +57,7 @@ async function start() {
 start()
 
 // BOT CONTROL
-async function process (room, sender, msg, quoted) {
+async function processCommand (room, sender, msg, quoted) {
   const prefix = '!'
   
   if (!msg.startsWith(prefix)) {return}
@@ -66,7 +66,7 @@ async function process (room, sender, msg, quoted) {
   const command = inputs[0].slice(1).toLowerCase()
   if (!command) {return [`⚠ Mohon perhatikan penulisan perintah bot yang benar.\nContoh: ${prefix}menu`]}
   const params = inputs.slice(1)
-  
-  
+
   
 }
+a
