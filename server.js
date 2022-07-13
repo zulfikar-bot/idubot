@@ -1,11 +1,12 @@
 
 const http = require('http')
 const fs = require('fs')
-const port = process.env.PORT || 3000
-const owner = process.env.OWNER
 
 const baileys = require('@adiwajshing/baileys')
 const {useMultiFileAuthState} = baileys
+
+const port = process.env.PORT || 3000
+const owner = process.env.OWNER
 
 http.createServer((_,res) => {
   res.end('Server is running')
