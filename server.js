@@ -55,8 +55,6 @@ async function start() {
   })
 }
 
-start()
-
 // BOT CONTROL
 const prefix = '!'
 
@@ -73,6 +71,8 @@ const cmdList = [
     
   }}
 ]
+
+start()
 
 async function processCommand (room, sender, msg, quoted) {
   if (!msg.startsWith(prefix)) {return}
