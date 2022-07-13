@@ -24,8 +24,9 @@ async function start() {
       }
     }
   })
-  sock.ev.on('messages.upsert', update => {
+  sock.ev.on('messages.upsert', async update => {
     if (update.type !== 'notify') return
+    await sock.readMessages(update.messages.filter(m=>m.key.remoteJid!=='status@broadcast').map(m=>m.key))
     for (let message of update.messages) {
       //console.log(message)
       if (message.key.remoteJid === 'status@broadcast') continue
@@ -44,4 +45,13 @@ async function start() {
 start()
 
 // BOT CONTROL
-async function processMessage (jid, part)
+async function process (room, sender, msg, quoted) {
+  const prefix = '!'
+  
+  if (!msg.startsWith(prefix)) return
+  if (msg.length <= 1) return
+  const inputs = msg.split(' ')
+  const command = inputs[0]
+  if (!command) return [`⚠ Mohon perhatikan penulisan perintah bot yang benar.\nContoh: ${prefix}menu`]
+  
+}
