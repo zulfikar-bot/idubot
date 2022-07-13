@@ -28,6 +28,8 @@ async function start() {
     if (update.type !== 'notify') return
     for (let message of update.messages) {
       console.log(message)
+      if (message.key.remoteJid === 'status@broadcast') continue
+      if (message.key.fromMe) continue
       let msgDebug
       if (message.message.imageMessage) msgDebug = '[IMAGE] '+message.message.imageMessage.caption
       else if (message.message.audioMessage) msgDebug = '[AUDIO]'
