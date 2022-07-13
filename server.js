@@ -24,7 +24,13 @@ async function start() {
       }
     }
   })
-  sock.ev.on('messages.upsert')
+  sock.ev.on('messages.upsert', update => {
+    if (update.type !== 'notify') return
+    for (let message of update.messages) {
+      console.log(`Message from ${message.pushName}: ${message.message}`)
+      console.log(message.message)
+    }
+  })
 }
 
 start()
