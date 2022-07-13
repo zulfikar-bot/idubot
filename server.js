@@ -27,7 +27,7 @@ async function start() {
   sock.ev.on('messages.upsert', update => {
     if (update.type !== 'notify') return
     for (let message of update.messages) {
-      console.log(message)
+      //console.log(message)
       if (message.key.remoteJid === 'status@broadcast') continue
       if (message.key.fromMe) continue
       let msgDebug
@@ -35,8 +35,13 @@ async function start() {
       else if (message.message.audioMessage) msgDebug = '[AUDIO]'
       else msgDebug = (message.message.extendedTextMessage?.text || message.message.conversation)
       console.log(`Message from ${message.pushName}: ${msgDebug}`)
+      
+      const response 
     }
   })
 }
 
 start()
+
+// BOT CONTROL
+async function processMessage (jid, part)
