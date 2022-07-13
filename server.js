@@ -65,6 +65,7 @@ async function process (room, sender, msg, quoted) {
   if (!command) return [`⚠ Mohon perhatikan penulisan perintah bot yang benar.\nContoh: ${prefix}menu`]
   const params = inputs.slice(1)
   
-  if (command === 'test') return ['Message from Glitch server']
+  
   
 }
+a
