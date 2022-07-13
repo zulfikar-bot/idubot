@@ -17,22 +17,14 @@ async function start() {
   sock.ev.on('connection.update', update => {
     if (update.qr) console.log(`RECEIVED QR\n${update.qr}`)
     if (update.connection === 'close') {
-//       if (update.lastDisconnect.error.output.statusCode === 401) {
-        
-//       }
-      const { connection, lastDisconnect } = update
-        if(connection === 'close') {
-            const shouldReconnect = lastDisconnect.error.output.statusCode === 401
-            console.log('connection closed due to ', lastDisconnect.error, ', reconnecting ', shouldReconnect)
-            // reconnect if not logged out
-            if(shouldReconnect) {
-                start()
-            }
-        } else if(connection === 'open') {
-            console.log('opened connection')
-        }
+      if (update.lastDisconnect.error.output.statusCode === 401) {
+        console.log('UNATHORIZED')
+      } else {
+        start()
+      }
     }
   })
+  sock.ev.on('messages.upsert')
 }
 
 start()
