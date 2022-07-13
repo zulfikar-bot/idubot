@@ -64,9 +64,14 @@ const cmdList = [
   {name:'ping', info:'Tes respon bot', run:()=>[choose('Pong','Halo','Hadir','Aktif')]},
   {name:'menu', info:'Tampilkan menu ini', run:()=>{return [
     '*MENU IDUBOT*\n============\n\n'+
-    cmdList.map(c=>prefix+c.name+' - '+c.info).join('\n')+
+    cmdList.map(c=>c.section ? `\n[${c.section}]` : prefix+c.name+' - '+c.info).join('\n')+
     `\n\nKontak owner: +${owner}`
-  ]}}
+  ]}},
+  
+  {section:'Belajar Bahasa Asing'},
+  {name:'sub', info:'Berlangganan pelajaran bahasa Asing (untuk grup)', run:(p)=>{
+    
+  }}
 ]
 
 async function processCommand (room, sender, msg, quoted) {
@@ -86,3 +91,4 @@ function choose() {
   return arguments[randomInt(arguments.length)]
 }
 
+a
