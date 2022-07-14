@@ -88,8 +88,11 @@ const cmdList = [
     if (!code) {return [`⚠ Sertakan dengan kode bahasa pelajaran. (${codelist})\nContoh: ${prefix}sub ${Object.keys(lessonList)[0]}`]}
     if (!Object.keys(lessonList).includes(code)) {return [`⚠ Kode bahasa *${code}* tidak dikenali. Kode yang ada: ${codelist}`]}
     if (!subbers[code].includes(room)) {
-    return [`✅ Grup ini telah berlangganan materi ${lessonList[code]}`]
-  }}
+      subbers[code].push(room)
+      
+    }
+    return [`✅ Grup ini telah berlangganan materi *${lessonList[code]}*`]
+  }},
 ]
 a
 start()
