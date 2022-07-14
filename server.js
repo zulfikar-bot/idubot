@@ -120,13 +120,13 @@ const cmdList = [
     return [`✅ Grup ini telah berhenti berlangganan materi bahasa asing`]
   }},
   {name:'materi', info:'Materi acak. Sertakan angka untuk memilih materi tertentu.', run:(room,param)=>{
-    const [code,params,error] = getSubCode(room, param)
+    const [code,params,error] = getSubCode(room, param, 'materi', ['','1'])
     if (!code) {return [error]}
     if (!params.length) {
       return [bba.getRandomMaterial(code)]
     }
     
-  }},a
+  }},
   
   // Owner Only
   {name:'showsub', ownerOnly:true, run:()=>[JSON.stringify(subbers, null, 1)]}
@@ -168,9 +168,14 @@ function saveFile(path, file, content) {
   fs.writeFileSync(path+'/'+file, content)
 }
 
-function getSubCode(room, param) {
+function getSubCode(room, param, cmdName, exParam) {
   if (!isJidGroup(room)) {
-    if (!param[0]) {return [undefined,undefined,]}
+    const example = exParam.map(e=>`${prefix}${cmdName} ${codelist[0]} ${e}`).join('\n')
+    if (!param[0]) {
+      return [undefined,undefined,`⚠ Sertakan dengan kode bahasa. (${codeliststring})\nContoh:\n${example}`]
+    } if (!codelist.includes(param[0])) {
+      return [undefined,undefined,`⚠ Kode bahasa tidak terdeteksi. Sertakan dengan kode bahasa yang benar.\n(${codeliststring})\nContoh:\n${example}`]
+    }
     return [param[0],param.slice(1)]
   }
   for (let s of Object.keys(subbers)) {

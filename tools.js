@@ -1,4 +1,4 @@
-const https = require('follow-redirects')
+const {https} = require('follow-redirects')
 const fs = require('fs')
 
 module.exports = {
