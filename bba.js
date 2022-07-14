@@ -9,7 +9,7 @@ const fileCache = {}
 
 async function getMaterialList(code) {
   if (!materialList[code]) {
-    materialList[code] = JSON.parse((await getFile(`${code}/list.json`)).response)  
+    materialList[code] = JSON.parse((await getFile(`${code}/list.json`)))  
   } return materialList[code]
 }
 
@@ -22,5 +22,9 @@ module.exports = {
   getRandomMaterial: async(code)=>{
     const list = await getMaterialList(code)
     return (await getFile(`${code}/files/${list[randomInt(list.length)].link}`))
+  },
+  getMaterial: async(code, id) => {
+    const list = await getMaterialList(code)
+    if (!list[id]) {return }
   }
 }

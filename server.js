@@ -119,14 +119,12 @@ const cmdList = [
     removeSubscription(room)
     return [`✅ Grup ini telah berhenti berlangganan materi bahasa asing`]
   }},
-  {name:'materi', info:'Materi acak. Sertakan angka untuk memilih materi tertentu.', run:(room,param)=>{
+  {name:'materi', info:'Materi acak. Sertakan angka untuk memilih materi tertentu.', run:async(room,param)=>{
     const [code,params,error] = getSubCode(room, param, 'materi', ['','1'])
     if (!code) {return [error]}
-    if (!params.length) {
-      return [bba.getRandomMaterial(code)]
-    }
-    
-  }},
+    if (!params.length) {return [await bba.getRandomMaterial(code)]} 
+    const material = await bba.getMaterial(code,id)
+  }},a
   
   // Owner Only
   {name:'showsub', ownerOnly:true, run:()=>[JSON.stringify(subbers, null, 1)]}
