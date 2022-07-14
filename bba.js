@@ -7,9 +7,8 @@ const materialList = {}
 
 async function getMaterialList(code) {
   if (!materialList[code]) {
-    
-  }
-  return await getFile(`${code}/list.json`)
+    materialList[code] = JSON.parse((await getFile(`${code}/list.json`)).response)  
+  } return materialList[code]
 }
 
 async function getFile(path) {
@@ -19,5 +18,6 @@ async function getFile(path) {
 module.exports = {
   getRandomMaterial: async(code)=>{
     const list = await getMaterialList(code)
+    
   }
 }
