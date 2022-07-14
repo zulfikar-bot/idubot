@@ -40,5 +40,13 @@ module.exports = {
         if (m.tags.includes(q)) {return true}
       } return false
     })
+  },
+  saveMaterial: async(code,title,tags,content) => {
+    const list = await getMaterialList(code)
+    let filename
+    do {filename = title.toLowerCase().replaceAll(/[^A-Z0-9 ]/gi,'').replaceAll(' ','-') + '.txt'}
+    while  
+    
+    
   }
 }

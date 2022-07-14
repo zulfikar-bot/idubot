@@ -153,12 +153,16 @@ const cmdList = [
       `${prefix}materi${!isGroup?' '+code:''} ${randomInt(result.length)+1}`
     ]
   }},
-  {name:'save', ownerOnly:true, run:(_,param,quoted)=>{
-    const [code,title,tags] = param
+  {name:'save', ownerOnly:true, run:async(_,param,quoted)=>{
+    let [code,title,tags] = param
     if (!code) {return ['Missing code']}
-    if (!lessonList.includes(code))
+    if (!lessonList.includes(code)) {return ['Wrong code']}
     if (!title) {return ['Missing title']}
-    
+    if (!quoted) {return ['Missing content']}
+    title = title.replaceAll('_',' ')
+    tags = tags.split(',')
+    const id = await bba.saveMaterial(code, title, tags, quoted)
+    return [`✅ Materi tersimpan di nomor ${id}`]
   }},
   
   // Owner Only
