@@ -145,6 +145,11 @@ const cmdList = [
     const isGroup = isJidGroup(room)
     if (!params.length) {return [`⚠ Sertakan dengan kata kunci.\nContoh: ${prefix}cari${isGroup?' '+code:''} tata bahasa`]}
     const result = await bba.searchMaterial(code,params)
+    return [
+      `*Hasil pencarian materi ${lessonList[code]}*\n`+
+      `Kata kunci: ${params.join(' ')}\n\n`+
+      result.map(r=>`${r.i+1}) ${r.title}`).join()
+    ]
   }}
   
   // Owner Only

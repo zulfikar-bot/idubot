@@ -32,6 +32,13 @@ module.exports = {
     return await getMaterialList(code)
   },
   searchMaterial: async(code,query) => {
-    
+    return (await getMaterialList(code)).map((m,i)=>{
+      Object.assign(m,{i})
+    }).filter(m=>{
+      for (let q of query) {
+        if (m.title.toLowerCase().includes(q)) {return true}
+        if (m.tags.includes(q)) {return true}
+      }
+    })
   }
 }
