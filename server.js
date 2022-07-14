@@ -86,6 +86,8 @@ function removeSubscription(room) {
   }
 }
 
+function 
+
 // BOT CONTROL
 const prefix = '!'
 const cmdList = [
@@ -120,7 +122,9 @@ const cmdList = [
   {name:'materi', info:'Materi acak. Sertakan angka untuk memilih materi tertentu.', run:(room,param)=>{
     const [code,params,error] = getSubCode(room, param)
     if (!code) {return [error]}
-    if (!params.length)
+    if (!params.length) {
+      return [getRandomMaterial(code)]
+    }
     
   }},
   
