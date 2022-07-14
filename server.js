@@ -39,12 +39,13 @@ async function start() {
       const sender = message.key.participant
       const quoted = message.message?.extendedTextMessage?.contextInfo?.quotedMessage?.conversation ||
                     message.message?.extendedTextMessage?.contextInfo?.quotedMessage?.extendedTextMessage?.text
-      const isAdmin = isJidGroup(room) && (await sock.groupMetadata(room)).participants.find(p=>p.id===sender).admin
+      const groupdata = isJidGroup(room) ? (await sock.groupMetadata(room)) : undefined
+      const isAdmin = groupdata?.participants.find(p=>p.id===sender).admin
       let msgDebug
       if (message.message?.imageMessage) msgDebug = '[IMAGE] '+message.message?.imageMessage.caption
       else if (message.message?.audioMessage) msgDebug = '[AUDIO]'
-      else msgDebug = (message.message?.extendedTextMessage?.text || message.message?.conversation)a
-      console.log(`Message from ${message.pushName}: ${msgDebug}${sock.gro`)
+      else msgDebug = (message.message?.extendedTextMessage?.text || message.message?.conversation)
+      console.log(`Message from ${message.pushName}: ${msgDebug}${groupdata?` (${groupdata.subject})`:''}`)
       
       if (!msgDebug) {return}
       const response = await processCommand(room, sender, msgDebug, quoted, isAdmin)
