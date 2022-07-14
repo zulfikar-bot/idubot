@@ -112,12 +112,15 @@ const cmdList = [
     return [`✅ Grup ini telah berlangganan materi *${lessonList[code]}*`]
   }},
   {name:'unsub', info:'Berhenti berlangganan pelajaran bahasa asing (untuk grup)', adminOnly:true, run:(room)=>{
+    if (!isJidGroup(room)) {return ['⚠ Perintah tersebut hanya berlaku di dalam grup']}
     removeSubscription(room)
     return [`✅ Grup ini telah berhenti berlangganan materi bahasa asing`]
   }},
+  
+  // Owner Only
   {name:'showsub', ownerOnly:true, run:()=>[JSON.stringify(subbers, null, 1)]}
 ]
-
+a
 start()
 
 async function processCommand (room, sender, msg, quoted, isAdmin) {
