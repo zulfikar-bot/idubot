@@ -14,5 +14,24 @@ module.exports = {
             }).on('error', e=>reject(e))
         }).on('error', e=>reject(e))
     })
-  }
+  },
+  request : (method, url, options, data) => {
+    return new Promise((resolve, reject) => {
+      const req = https.request(url, Object.assign({method},options), res => {
+        const data = []
+          res.on('data', chunk => {
+                    data.push(chunk)
+                }).on('end', () => {
+                    console.log(`${method} at ${url}:`, res.statusCode)
+                    const fullData = Buffer.concat(data).toString()
+                    resolve({status:res.statusCode, response:fullData})
+                }).on('error', (e)=>{
+                    reject(e)
+                })
+            })
+            if (['POST', 'PUT'].includes(method)) {
+                req.write(data)
+            } req.end()
+        })
+    },
 }
