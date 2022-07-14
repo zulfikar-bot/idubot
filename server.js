@@ -39,6 +39,7 @@ async function start() {
       const sender = message.key.participant
       const quoted = message.message?.extendedTextMessage?.contextInfo?.quotedMessage?.conversation ||
                     message.message?.extendedTextMessage?.contextInfo?.quotedMessage?.extendedTextMessage?.text
+      const isAdmin = 
       let msgDebug
       if (message.message?.imageMessage) msgDebug = '[IMAGE] '+message.message?.imageMessage.caption
       else if (message.message?.audioMessage) msgDebug = '[AUDIO]'
@@ -46,7 +47,7 @@ async function start() {
       console.log(`Message from ${message.pushName}: ${msgDebug}`)
       
       if (!msgDebug) {return}
-      const response = await processCommand(room, sender, msgDebug, quoted)
+      const response = await processCommand(room, sender, msgDebug, quoted, isAdmin)
       if (!response) {return}
       
       for (let r of response) {
@@ -97,17 +98,27 @@ const cmdList = [
     return [`✅ Grup ini telah berlangganan materi *${lessonList[code]}*`]
   }},
 ]
-
+a
 start()
 
 async function processCommand (room, sender, msg, quoted) {
   if (!msg.startsWith(prefix)) {return}
   if (msg.length <= 1) {return}
+  
+  if (sender||room !== owner) {return [`Bot sementara dalam perbaikan`]}
+  
   const inputs = msg.split(' ')
   const command = inputs[0].slice(1).toLowerCase()
   
   if (!command) {return [`⚠ Mohon perhatikan penulisan perintah bot yang benar.\nContoh: ${prefix}menu`]}
-  if (!cmdList.find(c=>c.name===command)) {return [`⚠ Perintah *${command}* tidak ada. Ketik ${prefix}menu untuk melihat daftar perintah yang ada.`]}
+  
+  const cmdItem = cmdList.find(c=>c.name===command)
+  if (!cmdItem) {return [`⚠ Perintah *${command}* tidak ada. Ketik ${prefix}menu untuk melihat daftar perintah yang ada.`]}
+  
+  if (cmdItem.adminOnly && isJidGroup(room)) {
+    const {participants} = await sock.groupMetadata(room)
+    
+  }
   
   const params = inputs.slice(1)
   
