@@ -135,7 +135,7 @@ const cmdList = [
     return [
       `*List Materi ${lessonList[code]}*\n\n`+
       list.map((v,i)=>`${i+1}) ${v.title}`).join('\n')+
-      `\n\nUntuk menampilkan isi materi, gunak sertakan dengan angka. Contoh:\n`+
+      `\n\nUntuk menampilkan isi materi, gunakan perintah materi disertai dengan angka. Contoh:\n`+
       `${prefix}materi${isGroup?' '+code:''} ${randomInt(list.length)+1}`
     ]
   }},
@@ -143,7 +143,7 @@ const cmdList = [
   // Owner Only
   {name:'showsub', ownerOnly:true, run:()=>[JSON.stringify(subbers, null, 1)]}
 ]
-a
+
 start()
 
 async function processCommand (room, sender, msg, quoted, isAdmin) {
