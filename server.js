@@ -139,7 +139,13 @@ const cmdList = [
       `${prefix}materi${isGroup?' '+code:''} ${randomInt(list.length)+1}`
     ]
   }},
-  {name:'cari
+  {name:'cari', info:'Cari materi', run:async(room,param)=>{
+    const [code,params,error] = getSubCode(room,param,'cari', [''])
+    if (!code) {return [error]}
+    const isGroup = isJidGroup(room)
+    if (!params.length) {return [`⚠ Sertakan dengan kata kunci.\nContoh: ${prefix}cari${isGroup?' '+code:''} tata bahasa`]}
+    const result = await bba.searchMaterial(code,params)
+  }}
   
   // Owner Only
   {name:'showsub', ownerOnly:true, run:()=>[JSON.stringify(subbers, null, 1)]}

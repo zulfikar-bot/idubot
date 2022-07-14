@@ -30,5 +30,8 @@ module.exports = {
   },
   getList: async(code) => {
     return await getMaterialList(code)
+  },
+  searchMaterial: async(code,query) => {
+    
   }
 }
