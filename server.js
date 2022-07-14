@@ -91,7 +91,7 @@ const cmdList = [
     if (!Object.keys(lessonList).includes(code)) {return [`⚠ Kode bahasa *${code}* tidak dikenali. Kode yang ada: ${codelist}`]}
     if (!subbers[code].includes(room)) {
       subbers[code].push(room)
-      const dir = './.data/bba/subbers'
+      const dir = './.data/bba/subbers/'
       fs.mkdirSync(dir, {recursive:true})
       fs.writeFileSync(dir+'/'+code+'.json', JSON.stringify(subbers[code]))
     }
@@ -115,12 +115,11 @@ async function processCommand (room, sender, msg, quoted, isAdmin) {
   const cmdItem = cmdList.find(c=>c.name===command)
   if (!cmdItem) {return [`⚠ Perintah *${command}* tidak ada. Ketik ${prefix}menu untuk melihat daftar perintah yang ada.`]}
   
-  if ((cmdItem.adminOnly && isJidGroup(room) && !isAdmin)||(!owner)) {
-    return [`⚠ Hanya admin grup dan owner bot yang dapat menggunakan perintah tersebut`]
+  if (cmdItem.adminOnly && isJidGroup(room)) {
+    if (!isAdmin && (sender !== owner+numberEnding)) {return [`⚠ Hanya admin grup dan owner bot yang dapat menggunakan perintah tersebut`]}
   }
   
   const params = inputs.slice(1)
-  
   return cmdList.find(c=>c.name===command).run(room,sender,params,quoted)
  
 }
