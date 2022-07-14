@@ -7,6 +7,7 @@ const {useMultiFileAuthState, isJidGroup} = baileys
 
 const port = process.env.PORT || 3000
 const owner = process.env.OWNER
+const numberEnding = '@s.whatsapp.net'
 
 http.createServer((_,res) => {
   res.end('Server is running')
@@ -96,7 +97,7 @@ const cmdList = [
     return [`✅ Grup ini telah berlangganan materi *${lessonList[code]}*`]
   }},
 ]
-a
+
 start()
 
 async function processCommand (room, sender, msg, quoted) {
@@ -104,8 +105,10 @@ async function processCommand (room, sender, msg, quoted) {
   if (msg.length <= 1) {return}
   const inputs = msg.split(' ')
   const command = inputs[0].slice(1).toLowerCase()
+  
   if (!command) {return [`⚠ Mohon perhatikan penulisan perintah bot yang benar.\nContoh: ${prefix}menu`]}
   if (!cmdList.find(c=>c.name===command)) {return [`⚠ Perintah *${command}* tidak ada. Ketik ${prefix}menu untuk melihat daftar perintah yang ada.`]}
+  
   const params = inputs.slice(1)
   
   return cmdList.find(c=>c.name===command).run(room,sender,params,quoted)
