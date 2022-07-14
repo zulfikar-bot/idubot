@@ -77,7 +77,7 @@ function removeSubscription(room) {
     const pos = subbers[c].indexOf(room)
     if (pos !== -1) {
       subbers[c].splice(pos,1)
-      saveFile('./.data/bba/subbers/'+c+'.json', JSON.stringify(subbers[c]))
+      saveFile('./.data/bba/subbers', c+'.json', JSON.stringify(subbers[c]))
       return
     }
   }
@@ -89,7 +89,10 @@ const cmdList = [
   {name:'ping', info:'Tes respon bot', run:()=>[choose('Pong','Halo','Hadir','Aktif')]},
   {name:'menu', info:'Tampilkan menu ini', run:()=>{return [
     '*MENU IDUBOT*\n============\n\n'+
-    cmdList.map(c=>c.section ? `\n[${c.section}]` : prefix+c.name+' - '+c.info).join('\n')+
+    cmdList
+      .filter(c=>!c.ownerOnly)
+      .map(c=>{c.section ? `\n[${c.section}]` : prefix+c.name+' - '+c.info})
+      .join('\n')+
     `\n\nKontak owner: +${owner}`
   ]}},
   
@@ -103,29 +106,15 @@ const cmdList = [
     removeSubscription(room)
     if (!subbers[code].includes(room)) {
       subbers[code].push(room)
-      const dir = './.data/bba/subbers/'
-      fs.mkdirSync(dir, {recursive:true})
-      fs.writeFileSync(dir+code+'.json', JSON.stringify(subbers[code]))
+      saveFile('./.data/bba/subbers', code+'.json', JSON.stringify(subbers[code]))
     }
     return [`✅ Grup ini telah berlangganan materi *${lessonList[code]}*`]
   }},
-  {name:'unsub', info:'Berhenti berlangganan pelajaran bahasa Asing (untuk grup)', adminOnly:true, run:(room,param)=>{
-    const code = param[0]
-    const codelist = Object.keys(lessonList).join(', ')
-    if (!code) {return [`⚠ Sertakan dengan kode bahasa pelajaran. (${codelist})\nContoh: ${prefix}sub ${Object.keys(lessonList)[0]}`]}
-    if (!Object.keys(lessonList).includes(code)) {return [`⚠ Kode bahasa *${code}* tidak dikenali. Kode yang ada: ${codelist}`]}
-    if (subbers[code].includes(room)) {
-      const pos = subbers[code].indexOf(room)
-      if (pos !== -1) {
-        subbers[code].splice(pos,1)
-        const dir = './.data/bba/subbers/'
-        fs.mkdirSync(dir, {recursive:true})
-        fs.writeFileSync(dir+code+'.json', JSON.stringify(subbers[code]))
-      } 
-    }
-    return [`✅ Grup ini telah berhenti berlangganan materi *${lessonList[code]}*`]
+  {name:'unsub', info:'Berhenti berlangganan pelajaran bahasa asing (untuk grup)', adminOnly:true, run:(room)=>{
+    removeSubscription(room)
+    return [`✅ Grup ini telah berhenti berlangganan materi bahasa asing`]
   }},
-  {name:'materi', info:'Materi bahasa asing'}
+  {name:'showsub', ownerOnly:true, run:()=>JSON.stringify(subbers, null, 1)}
 ]
 a
 start()
@@ -159,7 +148,7 @@ function choose() {
   return arguments[randomInt(arguments.length)]
 }
 
-function saveFile(path, file) {
+function saveFile(path, file, content) {
   fs.mkdirSync(path, {recursive:true})
-  fs.writeFileSync(path+'/'+file)
+  fs.writeFileSync(path+'/'+file, content)
 }
