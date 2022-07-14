@@ -127,11 +127,16 @@ const cmdList = [
     if (material===404) {return [`⚠ Nomor materi tersebut tidak ditemukan`]}
     return [material]
   }},
+  {name:'list', info:'List materi', run:(room,param)=>{
+    const [code,params,error] = getSubCode(room,param,'list', [''])
+    if (!code) {return [error]}
+    
+  }}
   
   // Owner Only
   {name:'showsub', ownerOnly:true, run:()=>[JSON.stringify(subbers, null, 1)]}
 ]
-
+a
 start()
 
 async function processCommand (room, sender, msg, quoted, isAdmin) {
