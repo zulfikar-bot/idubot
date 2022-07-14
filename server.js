@@ -72,6 +72,17 @@ for (let c of Object.keys(lessonList)) {
   else {subbers[c]=[]}
 }
 
+function removeSubscription(room) {
+  for (let c of Object.keys(subbers)) {
+    const pos = subbers[c].indexOf(room)
+    if (pos !== -1) {
+      subbers[c].splice(pos,1)
+      saveFile('./.data/bba/subbers/'+c+'.json', JSON.stringify(subbers[c]))
+      return
+    }
+  }
+}
+
 // BOT CONTROL
 const prefix = '!'
 const cmdList = [
@@ -89,6 +100,7 @@ const cmdList = [
     const codelist = Object.keys(lessonList).join(', ')
     if (!code) {return [`⚠ Sertakan dengan kode bahasa pelajaran. (${codelist})\nContoh: ${prefix}sub ${Object.keys(lessonList)[0]}`]}
     if (!Object.keys(lessonList).includes(code)) {return [`⚠ Kode bahasa *${code}* tidak dikenali. Kode yang ada: ${codelist}`]}
+    removeSubscription(room)
     if (!subbers[code].includes(room)) {
       subbers[code].push(room)
       const dir = './.data/bba/subbers/'
@@ -104,9 +116,16 @@ const cmdList = [
     if (!Object.keys(lessonList).includes(code)) {return [`⚠ Kode bahasa *${code}* tidak dikenali. Kode yang ada: ${codelist}`]}
     if (subbers[code].includes(room)) {
       const pos = subbers[code].indexOf(room)
-      if (pos) 
+      if (pos !== -1) {
+        subbers[code].splice(pos,1)
+        const dir = './.data/bba/subbers/'
+        fs.mkdirSync(dir, {recursive:true})
+        fs.writeFileSync(dir+code+'.json', JSON.stringify(subbers[code]))
+      } 
     }
-  }}
+    return [`✅ Grup ini telah berhenti berlangganan materi *${lessonList[code]}*`]
+  }},
+  {name:'materi', info:'Materi bahasa asing'}
 ]
 a
 start()
@@ -140,3 +159,7 @@ function choose() {
   return arguments[randomInt(arguments.length)]
 }
 
+function saveFile(path, file) {
+  fs.mkdirSync(path, {recursive:true})
+  fs.writeFileSync(path+'/'+file)
+}
