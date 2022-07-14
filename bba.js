@@ -18,6 +18,12 @@ async function getFile(path) {
   return fileCache[path]
 }
 
+function makeFilename(input,format) {
+  return input.toLowerCase().replaceAll(/[^A-Z0-9 ]/gi,'').replaceAll(' ','-') + format
+}
+
+async functi
+
 module.exports = {
   getRandomMaterial: async(code)=>{
     const list = await getMaterialList(code)
@@ -43,10 +49,11 @@ module.exports = {
   },
   saveMaterial: async(code,title,tags,content) => {
     const list = await getMaterialList(code)
-    let filename
-    do {filename = title.toLowerCase().replaceAll(/[^A-Z0-9 ]/gi,'').replaceAll(' ','-') + '.txt'}
-    while  
-    
-    
+    let filename = makeFilename(title,'.txt')
+    while (list.find(i=>i.link===filename)) {
+      filename = makeFilename(title+randomInt(999),'.txt')
+    } 
+    const id = list.push({title,tags,link:filename})
+    await uploadFile(`${code}/files/${filename}`)
   }
 }
