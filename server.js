@@ -140,22 +140,24 @@ const cmdList = [
     ]
   }},
   {name:'cari', info:'Cari materi', run:async(room,param)=>{
-    const [code,params,error] = getSubCode(room,param,'cari', [''])
+    const [code,params,error] = getSubCode(room,param,'cari', ['tata bahasa'])
     if (!code) {return [error]}
     const isGroup = isJidGroup(room)
-    if (!params.length) {return [`⚠ Sertakan dengan kata kunci.\nContoh: ${prefix}cari${isGroup?' '+code:''} tata bahasa`]}
+    if (!params.length) {return [`⚠ Sertakan dengan kata kunci.\nContoh: ${prefix}cari${!isGroup?' '+code:''} tata bahasa`]}
     const result = await bba.searchMaterial(code,params)
     return [
       `*Hasil pencarian materi ${lessonList[code]}*\n`+
       `Kata kunci: ${params.join(' ')}\n\n`+
-      result.map(r=>`${r.i+1}) ${r.title}`).join()
+      result.map(r=>`${r.i+1}) ${r.title}`).join('\n')+
+      `\n\nUntuk menampilkan isi materi, gunakan perintah materi disertai dengan angka. Contoh:\n`+
+      `${prefix}materi${isGroup?' '+code:''} ${randomInt(result.length)+1}`
     ]
-  }}
+  }},
   
   // Owner Only
   {name:'showsub', ownerOnly:true, run:()=>[JSON.stringify(subbers, null, 1)]}
 ]
-a
+
 start()
 
 async function processCommand (room, sender, msg, quoted, isAdmin) {

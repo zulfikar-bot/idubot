@@ -39,6 +39,7 @@ module.exports = {
         if (m.title.toLowerCase().includes(q)) {return true}
         if (m.tags.includes(q)) {return true}
       }
+      return false
     })
   }
 }
