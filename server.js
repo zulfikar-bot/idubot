@@ -118,8 +118,9 @@ const cmdList = [
     return [`✅ Grup ini telah berhenti berlangganan materi bahasa asing`]
   }},
   {name:'materi', info:'Materi acak. Sertakan angka untuk memilih materi tertentu.', run:(room,param)=>{
-    const [code,params] = getSubCode(room, param)
-    if (!code) {return [`⚠ Grup ini belum berlangganan materi bahasa asing.\nUntuk admin grup/owner bot silakan ketik ${prefix}sub diikuti kode bahasa (${codeliststring})\nContoh:${prefix}sub ${codelist[0]}`]}
+    const [code,params,error] = getSubCode(room, param)
+    if (!code) {return [error]}
+    if (!params.length)
     
   }},
   
@@ -169,5 +170,5 @@ function getSubCode(room, param) {
     if (subbers[s].includes(room)) {
       return [s, param]
     }
-  }
+  } return [undefined,undefined,`⚠ Grup ini belum berlangganan materi bahasa asing.\nUntuk admin grup / owner bot silakan ketik ${prefix}sub diikuti kode bahasa (${codeliststring})\nContoh: ${prefix}sub ${codelist[0]}`]
 }
