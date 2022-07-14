@@ -43,8 +43,8 @@ async function start() {
       let msgDebug
       if (message.message?.imageMessage) msgDebug = '[IMAGE] '+message.message?.imageMessage.caption
       else if (message.message?.audioMessage) msgDebug = '[AUDIO]'
-      else msgDebug = (message.message?.extendedTextMessage?.text || message.message?.conversation)
-      console.log(`Message from ${message.pushName}: ${msgDebug}`)
+      else msgDebug = (message.message?.extendedTextMessage?.text || message.message?.conversation)a
+      console.log(`Message from ${message.pushName}: ${msgDebug}${sock.gro`)
       
       if (!msgDebug) {return}
       const response = await processCommand(room, sender, msgDebug, quoted, isAdmin)
@@ -114,16 +114,16 @@ const cmdList = [
     removeSubscription(room)
     return [`✅ Grup ini telah berhenti berlangganan materi bahasa asing`]
   }},
-  {name:'showsub', ownerOnly:true, run:()=>JSON.stringify(subbers, null, 1)}
+  {name:'showsub', ownerOnly:true, run:()=>[JSON.stringify(subbers, null, 1)]}
 ]
-a
+
 start()
 
 async function processCommand (room, sender, msg, quoted, isAdmin) {
   if (!msg.startsWith(prefix)) {return}
   if (msg.length <= 1) {return}
   
-  if ((sender||room) !== owner) {return [`Bot sementara dalam perbaikan`]}
+  if ((sender||room) !== owner+numberEnding) {return [`Bot sementara dalam perbaikan`]}
   
   const inputs = msg.split(' ')
   const command = inputs[0].slice(1).toLowerCase()
@@ -133,8 +133,8 @@ async function processCommand (room, sender, msg, quoted, isAdmin) {
   const cmdItem = cmdList.find(c=>c.name===command)
   if (!cmdItem) {return [`⚠ Perintah *${command}* tidak ada. Ketik ${prefix}menu untuk melihat daftar perintah yang ada.`]}
   
-  if (cmdItem.ownerOnly) {return [`⚠ Hanya owner bot yang dapat menggunakan perintah tersebut`]}
-  
+  if (cmdItem.ownerOnly && ((sender||room)!== owner+numberEnding)) {return [`⚠ Hanya owner bot yang dapat menggunakan perintah tersebut`]}
+
   if (cmdItem.adminOnly && isJidGroup(room)) {
     if (!isAdmin && (sender !== owner+numberEnding)) {return [`⚠ Hanya admin grup dan owner bot yang dapat menggunakan perintah tersebut`]}
   }
