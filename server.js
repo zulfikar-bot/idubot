@@ -39,7 +39,7 @@ async function start() {
       const sender = message.key.participant
       const quoted = message.message?.extendedTextMessage?.contextInfo?.quotedMessage?.conversation ||
                     message.message?.extendedTextMessage?.contextInfo?.quotedMessage?.extendedTextMessage?.text
-      const isAdmin = 
+      const isAdmin = isJidGroup(room) && (await sock.groupMetadata(room)).participants.find(p=>p.id===sender).admin
       let msgDebug
       if (message.message?.imageMessage) msgDebug = '[IMAGE] '+message.message?.imageMessage.caption
       else if (message.message?.audioMessage) msgDebug = '[AUDIO]'
@@ -101,11 +101,11 @@ const cmdList = [
 a
 start()
 
-async function processCommand (room, sender, msg, quoted) {
+async function processCommand (room, sender, msg, quoted, isAdmin) {
   if (!msg.startsWith(prefix)) {return}
   if (msg.length <= 1) {return}
   
-  if (sender||room !== owner) {return [`Bot sementara dalam perbaikan`]}
+  if ((sender||room) !== owner) {return [`Bot sementara dalam perbaikan`]}
   
   const inputs = msg.split(' ')
   const command = inputs[0].slice(1).toLowerCase()
@@ -115,9 +115,8 @@ async function processCommand (room, sender, msg, quoted) {
   const cmdItem = cmdList.find(c=>c.name===command)
   if (!cmdItem) {return [`⚠ Perintah *${command}* tidak ada. Ketik ${prefix}menu untuk melihat daftar perintah yang ada.`]}
   
-  if (cmdItem.adminOnly && isJidGroup(room)) {
-    const {participants} = await sock.groupMetadata(room)
-    
+  if ((cmdItem.adminOnly && isJidGroup(room) && !isAdmin)||(!owner)) {
+    return [`⚠ Hanya admin grup dan owner bot yang dapat menggunakan perintah tersebut`]
   }
   
   const params = inputs.slice(1)
