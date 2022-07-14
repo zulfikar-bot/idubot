@@ -83,7 +83,7 @@ const cmdList = [
   ]}},
   
   {section:'Belajar Bahasa Asing'},
-  {name:'sub', info:'Berlangganan pelajaran bahasa Asing (untuk grup)', adminOnly:true, run:(room,sender,param)=>{
+  {name:'sub', info:'Berlangganan pelajaran bahasa Asing (untuk grup)', adminOnly:true, run:(room,param)=>{
     if (!isJidGroup(room)) {return ['⚠ Perintah tersebut hanya berlaku di dalam grup']}
     const code = param[0]
     const codelist = Object.keys(lessonList).join(', ')
@@ -93,10 +93,20 @@ const cmdList = [
       subbers[code].push(room)
       const dir = './.data/bba/subbers/'
       fs.mkdirSync(dir, {recursive:true})
-      fs.writeFileSync(dir+'/'+code+'.json', JSON.stringify(subbers[code]))
+      fs.writeFileSync(dir+code+'.json', JSON.stringify(subbers[code]))
     }
     return [`✅ Grup ini telah berlangganan materi *${lessonList[code]}*`]
   }},
+  {name:'unsub', info:'Berhenti berlangganan pelajaran bahasa Asing (untuk grup)', adminOnly:true, run:(room,param)=>{
+    const code = param[0]
+    const codelist = Object.keys(lessonList).join(', ')
+    if (!code) {return [`⚠ Sertakan dengan kode bahasa pelajaran. (${codelist})\nContoh: ${prefix}sub ${Object.keys(lessonList)[0]}`]}
+    if (!Object.keys(lessonList).includes(code)) {return [`⚠ Kode bahasa *${code}* tidak dikenali. Kode yang ada: ${codelist}`]}
+    if (subbers[code].includes(room)) {
+      const pos = subbers[code].indexOf(room)
+      if (pos) 
+    }
+  }}
 ]
 a
 start()
@@ -115,12 +125,14 @@ async function processCommand (room, sender, msg, quoted, isAdmin) {
   const cmdItem = cmdList.find(c=>c.name===command)
   if (!cmdItem) {return [`⚠ Perintah *${command}* tidak ada. Ketik ${prefix}menu untuk melihat daftar perintah yang ada.`]}
   
+  if (cmdItem.ownerOnly) {return [`⚠ Hanya owner bot yang dapat menggunakan perintah tersebut`]}
+  
   if (cmdItem.adminOnly && isJidGroup(room)) {
     if (!isAdmin && (sender !== owner+numberEnding)) {return [`⚠ Hanya admin grup dan owner bot yang dapat menggunakan perintah tersebut`]}
   }
   
   const params = inputs.slice(1)
-  return cmdList.find(c=>c.name===command).run(room,sender,params,quoted)
+  return cmdList.find(c=>c.name===command).run(room,params,quoted)
  
 }
 
