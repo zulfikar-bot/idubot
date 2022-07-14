@@ -116,6 +116,7 @@ const cmdList = [
     removeSubscription(room)
     return [`✅ Grup ini telah berhenti berlangganan materi bahasa asing`]
   }},
+  {name:'materi', info:'Materi bahasa asing'}
   
   // Owner Only
   {name:'showsub', ownerOnly:true, run:()=>[JSON.stringify(subbers, null, 1)]}
