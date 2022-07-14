@@ -127,11 +127,18 @@ const cmdList = [
     if (material===404) {return [`⚠ Nomor materi tersebut tidak ditemukan`]}
     return [material]
   }},
-  {name:'list', info:'List materi', run:(room,param)=>{
+  {name:'list', info:'List materi', run: async (room,param)=>{
     const [code,params,error] = getSubCode(room,param,'list', [''])
     if (!code) {return [error]}
-    
-  }}
+    const list = await bba.getList(code)
+    const isGroup = isJidGroup(room)
+    return [
+      `*List Materi ${lessonList[code]}*\n\n`+
+      list.map((v,i)=>`${i+1}) ${v.title}`).join('\n')+
+      `\n\nUntuk menampilkan isi materi, gunak sertakan dengan angka. Contoh:\n`+
+      `${prefix}materi${isGroup?' '+code:''} ${randomInt(list.length)+1}`
+    ]
+  }},
   
   // Owner Only
   {name:'showsub', ownerOnly:true, run:()=>[JSON.stringify(subbers, null, 1)]}
