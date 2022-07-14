@@ -1,8 +1,14 @@
 const {download, request} = require('./tools')
 const {randomInt} = require('crypto')
 
+const agent = process.env.USER_AGENT
 const token = process.env.GITHUB_TOKEN
 const repo = 'aidulcandra/materi-bahasa-asing'
+
+const defaultHeader = {
+  'User-Agent': agent,
+  'Authorization': 'token '+token
+}
 
 const materialList = {}
 const fileCache = {}
@@ -22,7 +28,17 @@ function makeFilename(input,format) {
   return input.toLowerCase().replaceAll(/[^A-Z0-9 ]/gi,'').replaceAll(' ','-') + format
 }
 
-async functi
+async function uploadFile(path, content) {
+  await request('PUT', `https://api.github.com/repos/${repo}/contents/${path}`, {headers:defaultHeader},
+    JSON.stringify({
+      message:`Upload file: ${path}`,
+      content:Buffer.from(content).toString('base64')
+  }))
+}
+
+async function updateFile(path, content) {
+  
+}
 
 module.exports = {
   getRandomMaterial: async(code)=>{
@@ -55,5 +71,7 @@ module.exports = {
     } 
     const id = list.push({title,tags,link:filename})
     await uploadFile(`${code}/files/${filename}`)
+    await updateFile(`${code}/list.json`, JSON.stringify(list))
+    return id
   }
 }
