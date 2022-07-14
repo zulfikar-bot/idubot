@@ -65,6 +65,8 @@ const lessonList = {
   de:'Deutsch', 
   es:'Español'
 }
+const codelist = Object.keys(lessonList)
+const codeliststring = codelist.join(', ')
 
 const subbers = {}
 for (let c of Object.keys(lessonList)) {
@@ -101,9 +103,8 @@ const cmdList = [
   {name:'sub', info:'Berlangganan pelajaran bahasa Asing (untuk grup)', adminOnly:true, run:(room,param)=>{
     if (!isJidGroup(room)) {return ['⚠ Perintah tersebut hanya berlaku di dalam grup']}
     const code = param[0]
-    const codelist = Object.keys(lessonList).join(', ')
-    if (!code) {return [`⚠ Sertakan dengan kode bahasa pelajaran. (${codelist})\nContoh: ${prefix}sub ${Object.keys(lessonList)[0]}`]}
-    if (!Object.keys(lessonList).includes(code)) {return [`⚠ Kode bahasa *${code}* tidak dikenali. Kode yang ada: ${codelist}`]}
+    if (!code) {return [`⚠ Sertakan dengan kode bahasa pelajaran. (${codeliststring})\nContoh: ${prefix}sub ${codelist[0]}`]}
+    if (!Object.keys(lessonList).includes(code)) {return [`⚠ Kode bahasa *${code}* tidak dikenali. Kode yang ada: ${codeliststring}`]}
     removeSubscription(room)
     if (!subbers[code].includes(room)) {
       subbers[code].push(room)
@@ -116,8 +117,10 @@ const cmdList = [
     removeSubscription(room)
     return [`✅ Grup ini telah berhenti berlangganan materi bahasa asing`]
   }},
-  {name:'materi', info:'Materi acak. Sertakan angka untuk memilih materi tertentu.', run:(_,param)=>{
-    const code = getSubCode(room, param[0])
+  {name:'materi', info:'Materi acak. Sertakan angka untuk memilih materi tertentu.', run:(room,param)=>{
+    const [code,params] = getSubCode(room, param)
+    if (!code) {return [`⚠ Grup ini belum berlangganan materi bahasa asing.\nUntuk admin grup/owner bot silakan ketik ${prefix}sub diikuti kode bahasa (${codeliststring})\nContoh:${prefix}sub ${codelist[0]}`]}
+    
   }},
   
   // Owner Only
@@ -160,11 +163,11 @@ function saveFile(path, file, content) {
   fs.writeFileSync(path+'/'+file, content)
 }
 
-function getSubCode(room, code) {
-  if (!isJidGroup(room)) {return code}
+function getSubCode(room, param) {
+  if (!isJidGroup(room)) {return [param[0],param.slice(1)]}
   for (let s of Object.keys(subbers)) {
     if (subbers[s].includes(room)) {
-      return s
+      return [s, param]
     }
   }
 }
