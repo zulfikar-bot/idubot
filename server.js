@@ -9,6 +9,8 @@ const port = process.env.PORT || 3000
 const owner = process.env.OWNER
 const numberEnding = '@s.whatsapp.net'
 
+const bba = require('./bba')
+
 http.createServer((_,res) => {
   res.end('Server is running')
 }).listen(port)
@@ -86,8 +88,6 @@ function removeSubscription(room) {
   }
 }
 
-function 
-
 // BOT CONTROL
 const prefix = '!'
 const cmdList = [
@@ -123,15 +123,15 @@ const cmdList = [
     const [code,params,error] = getSubCode(room, param)
     if (!code) {return [error]}
     if (!params.length) {
-      return [getRandomMaterial(code)]
+      return [bba.getRandomMaterial(code)]
     }
     
-  }},
+  }},a
   
   // Owner Only
   {name:'showsub', ownerOnly:true, run:()=>[JSON.stringify(subbers, null, 1)]}
 ]
-a
+
 start()
 
 async function processCommand (room, sender, msg, quoted, isAdmin) {
@@ -169,7 +169,10 @@ function saveFile(path, file, content) {
 }
 
 function getSubCode(room, param) {
-  if (!isJidGroup(room)) {return [param[0],param.slice(1)]}
+  if (!isJidGroup(room)) {
+    if (!param[0]) {return [undefined,undefined,]}
+    return [param[0],param.slice(1)]
+  }
   for (let s of Object.keys(subbers)) {
     if (subbers[s].includes(room)) {
       return [s, param]

@@ -1,4 +1,4 @@
-const {download, request} = require('tools')
+const {download, request} = require('./tools')
 const {randomInt} = require('crypto')
 
 const token = process.env.GITHUB_TOKEN
@@ -14,9 +14,8 @@ async function getMaterialList(code) {
 }
 
 async function getFile(path) {
-  if (fileCache[path]) {return fileCache[path]}
-  fileCache[path] = (await request('GET', `https://github.com/${repo}/raw/main/${path}`)).response
-  return 
+  if (!fileCache[path]) {fileCache[path] = (await request('GET', `https://github.com/${repo}/raw/main/${path}`)).response}
+  return fileCache[path]
 }
 
 module.exports = {
