@@ -57,11 +57,16 @@ async function start() {
 
 // Belajar Bahasa Asing
 const lessonList = {
-  en:{name:'English',subbers:[], 
+  en:'English', 
   ja:'Nihon-go', 
   de:'Deutsch', 
   es:'Español'
 }
+
+const subbers = {}
+for (let c of Object.keys(lessonList)) {
+  const filename = './.data/bba/subbers/'+c+'.json'
+  if (fs.existsSync(filename)) {subbers[c]=JSON
 
 // BOT CONTROL
 const prefix = '!'
