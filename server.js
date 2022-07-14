@@ -139,11 +139,12 @@ const cmdList = [
       `${prefix}materi${isGroup?' '+code:''} ${randomInt(list.length)+1}`
     ]
   }},
+  {name:'cari
   
   // Owner Only
   {name:'showsub', ownerOnly:true, run:()=>[JSON.stringify(subbers, null, 1)]}
 ]
-
+a
 start()
 
 async function processCommand (room, sender, msg, quoted, isAdmin) {
