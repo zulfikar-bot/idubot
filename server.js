@@ -89,9 +89,9 @@ const cmdList = [
     if (!Object.keys(lessonList).includes(code)) {return [`⚠ Kode bahasa *${code}* tidak dikenali. Kode yang ada: ${codelist}`]}
     if (!subbers[code].includes(room)) {
       subbers[code].push(room)
-      const dir = './.data/bba/subbers/'
-      if (!fs.existsSync(dir)) {fs.mkdir
-      fs.writeFileSync('./.data/bba/subbers/'+code+'.json', JSON.stringify(subbers[code]))
+      const dir = './.data/bba/subbers'
+      fs.mkdirSync(dir, {recursive:true})
+      fs.writeFileSync(dir+'/'+code+'.json', JSON.stringify(subbers[code]))
     }
     return [`✅ Grup ini telah berlangganan materi *${lessonList[code]}*`]
   }},
