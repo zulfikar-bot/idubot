@@ -66,7 +66,9 @@ const lessonList = {
 const subbers = {}
 for (let c of Object.keys(lessonList)) {
   const filename = './.data/bba/subbers/'+c+'.json'
-  if (fs.existsSync(filename)) {subbers[c]=JSON
+  if (fs.existsSync(filename)) {subbers[c]=require(filename)}
+  else {subbers[c]=[]}
+}
 
 // BOT CONTROL
 const prefix = '!'
@@ -85,6 +87,7 @@ const cmdList = [
     const codelist = Object.keys(lessonList).join(', ')
     if (!code) {return [`⚠ Sertakan dengan kode bahasa pelajaran. (${codelist})\nContoh: ${prefix}sub ${Object.keys(lessonList)[0]}`]}
     if (!Object.keys(lessonList).includes(code)) {return [`⚠ Kode bahasa *${code}* tidak dikenali. Kode yang ada: ${codelist}`]}
+    if (!subbers[code].includes(room)) {
     return [`✅ Grup ini telah berlangganan materi ${lessonList[code]}`]
   }}
 ]
