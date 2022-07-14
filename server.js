@@ -123,8 +123,10 @@ const cmdList = [
     const [code,params,error] = getSubCode(room, param, 'materi', ['','1'])
     if (!code) {return [error]}
     if (!params.length) {return [await bba.getRandomMaterial(code)]} 
-    const material = await bba.getMaterial(code,id)
-  }},a
+    const material = await bba.getMaterial(code,params[0]-1)
+    if (material===404) {return [`⚠ Nomor materi tersebut tidak ditemukan`]}
+    return [material]
+  }},
   
   // Owner Only
   {name:'showsub', ownerOnly:true, run:()=>[JSON.stringify(subbers, null, 1)]}

@@ -25,6 +25,7 @@ module.exports = {
   },
   getMaterial: async(code, id) => {
     const list = await getMaterialList(code)
-    if (!list[id]) {return }
+    if (!list[id]) {return 404}
+    return (await getFile(`${code}/files/${list[id].link}`))
   }
 }
