@@ -116,7 +116,9 @@ const cmdList = [
     removeSubscription(room)
     return [`✅ Grup ini telah berhenti berlangganan materi bahasa asing`]
   }},
-  {name:'materi', info:'Materi bahasa asing'}
+  {name:'materi', info:'Materi acak. Sertakan angka untuk memilih materi tertentu.', run:(_,param)=>{
+    const code = getSubCode(room, param[0])
+  }},
   
   // Owner Only
   {name:'showsub', ownerOnly:true, run:()=>[JSON.stringify(subbers, null, 1)]}
@@ -156,4 +158,13 @@ function choose() {
 function saveFile(path, file, content) {
   fs.mkdirSync(path, {recursive:true})
   fs.writeFileSync(path+'/'+file, content)
+}
+
+function getSubCode(room, code) {
+  if (!isJidGroup(room)) {return code}
+  for (let s of Object.keys(subbers)) {
+    if (subbers[s].includes(room)) {
+      return s
+    }
+  }
 }
