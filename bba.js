@@ -61,7 +61,14 @@ function saveFile(path, file, content) {
 }
 
 module.exports = {
-  getLessonCodes: () => lessonList,
+  getLessonList: () => lessonList,
+  getSubbers: () => subbers,
+  addSubscription: async (code,room) => {
+    if (!subbers[code].includes(room)) {
+      subbers[code].push(room)
+      saveFile('./.data/bba/subbers', code+'.json', JSON.stringify(subbers[code]))
+    }
+  },
   removeSubscription: async (room) => {
     for (let c of Object.keys(subbers)) {
       const pos = subbers[c].indexOf(room)

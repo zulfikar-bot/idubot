@@ -63,7 +63,8 @@ async function start() {
 }
 
 // Belajar Bahasa Asing
-const codelist = Object.keys(bba.getLessonCodes())
+const lessonList = bba.getLessonList()
+const codelist = Object.keys(lessonList)
 const codeliststring = codelist.join(', ')
 
 // BOT CONTROL
@@ -85,16 +86,13 @@ const cmdList = [
     const code = param[0]
     if (!code) {return [`⚠ Sertakan dengan kode bahasa pelajaran. (${codeliststring})\nContoh: ${prefix}sub ${codelist[0]}`]}
     if (!Object.keys(lessonList).includes(code)) {return [`⚠ Kode bahasa *${code}* tidak dikenali. Kode yang ada: ${codeliststring}`]}
-    removeSubscription(room)
-    if (!subbers[code].includes(room)) {
-      subbers[code].push(room)
-      saveFile('./.data/bba/subbers', code+'.json', JSON.stringify(subbers[code]))
-    }
+    bba.removeSubscription(room)
+    bba.addSubscription(code,room)
     return [`✅ Grup ini telah berlangganan materi *${lessonList[code]}*`]
   }},
   {name:'unsub', info:'Berhenti berlangganan pelajaran bahasa asing (untuk grup)', adminOnly:true, run:(room)=>{
     if (!isJidGroup(room)) {return ['⚠ Perintah tersebut hanya berlaku di dalam grup']}
-    removeSubscription(room)
+    bba.removeSubscription(room)
     return [`✅ Grup ini telah berhenti berlangganan materi bahasa asing`]
   }},
   {name:'materi', info:'Materi acak. Sertakan angka untuk memilih materi tertentu.', run:async(room,param)=>{
@@ -144,7 +142,7 @@ const cmdList = [
   }},
   
   // Owner Only
-  {name:'showsub', ownerOnly:true, run:()=>[JSON.stringify(subbers, null, 1)]}
+  {name:'showsub', ownerOnly:true, run:()=>[JSON.stringify(bba.getSubbers(), null, 1)]}
 ]
 
 start()
@@ -153,7 +151,7 @@ async function processCommand (room, sender, msg, quoted, isAdmin) {
   if (!msg.startsWith(prefix)) {return}
   if (msg.length <= 1) {return}
   
-  if ((sender||room) !== owner+numberEnding) {return [`Bot sementara dalam perbaikan`]}
+  //if ((sender||room) !== owner+numberEnding) {return [`Bot sementara dalam perbaikan`]}
   
   const inputs = msg.split(' ')
   const command = inputs[0].slice(1).toLowerCase()
@@ -188,6 +186,7 @@ function getSubCode(room, param, cmdName, exParam) {
     }
     return [param[0],param.slice(1)]
   }
+  const subbers = bba.getSubbers()
   for (let s of Object.keys(subbers)) {
     if (subbers[s].includes(room)) {
       return [s, param]
