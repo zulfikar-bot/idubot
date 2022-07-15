@@ -7,8 +7,8 @@
     "start": "node server.js"
   },
   "dependencies": {
-    "follow-redirects": "^1.15.1",
-    "@adiwajshing/baileys": "github:adiwajshing/baileys"
+    "@adiwajshing/baileys": "github:adiwajshing/baileys",
+    "follow-redirects": "^1.15.1"
   },
   "engines": {
     "node": "16.x"

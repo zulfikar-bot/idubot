@@ -246,6 +246,7 @@ const cmdList = [
     }
   },
   {name: "trans", info:'Google Translate', run: async (_, param, quoted) => {
+    return ['Fitur ini sedang dikembangkan']
     const [from, to] = param
     let text = param.slice(2).join(' ')
     if (!from||!to) {return [`⚠ Sertakan dengan kode bahasa asal dan target.\nContoh: ${prefix}trans en id Good morning`]}
@@ -266,6 +267,7 @@ const cmdList = [
     ]
   }},
   {name: 'kodetrans', info:'Daftar kode bahasa G. Translate', run:()=>{
+    return ['Fitur ini sedang dikembangkan']
     return[
       '*Daftar Kode Bahasa Google Translate*\n'+
       '*Bahasa ----- Kode*\n'+
