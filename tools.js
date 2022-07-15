@@ -1,4 +1,4 @@
-const {https} = require('follow-redirects')
+const {http,https} = require('follow-redirects')
 const fs = require('fs')
 
 module.exports = {
@@ -18,6 +18,25 @@ module.exports = {
   request : (method, url, options, data) => {
     return new Promise((resolve, reject) => {
       const req = https.request(url, Object.assign({method},options), res => {
+        const data = []
+        res.on('data', chunk => {
+          data.push(chunk)
+        }).on('end', () => {
+          console.log(`${method} at ${url}:`, res.statusCode)
+          const fullData = Buffer.concat(data).toString()
+          resolve({status:res.statusCode, response:fullData})
+        }).on('error', (e)=>{
+          reject(e)
+        })
+      })
+      if (['POST', 'PUT'].includes(method)) {
+        req.write(data)
+      } req.end()
+    })
+  },
+  request1 : (method, url, options, data) => {
+    return new Promise((resolve, reject) => {
+      const req = http.request(url, Object.assign({method},options), res => {
         const data = []
         res.on('data', chunk => {
           data.push(chunk)

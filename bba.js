@@ -1,4 +1,4 @@
-const {download, request} = require('./tools')
+const {download, request, request1} = require('./tools')
 const {randomInt} = require('crypto')
 const fs = require('fs')
 
@@ -191,24 +191,8 @@ module.exports = {
     return id
   },
   translate: async (from,to,text) => {
-    if (!browser) {
-    }
-    const page = translatorPage
-    while (translatorBusy) {
-      await new Promise(resolve=>setTimeout(resolve,500))
-    } translatorBusy = true
-    if (from!==lastTranslate?.from || to!==lastTranslate?.to) {
-      await page.goto(`https://translate.google.com?sl=${from}&tl=${to}`, {timeout:0})
-    } await page.keyboard.sendCharacter(text)
-    await page.waitForFunction(() => {
-      return document.querySelector('span>span>span[jsaction]')?.textContent
-    }, {timeout:0})
-    const translation = await page.$$eval('div>span[lang]>span>span', e => e.map(i => i.textContent).join(' '))
-    const translit = await page.$eval('[data-language]>[aria-hidden]>div', e => e.textContent)
-    await page.click('[aria-label="Clear source text"]')
-    Object.assign(lastTranslate, {from,to})
-    translatorBusy = false
-    return {translation, translit}
+    const result = await request1('POST','http://idul-pup-services.herokapp.com/translate', null, JSON.stringify({from,to,text}))
+    return JSON.parse(result.response)
   },
   getTranslateCodes: () => {
     return translateCodes
