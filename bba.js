@@ -193,7 +193,7 @@ module.exports = {
   },
   translate: async (from,to,text) => {
     if (!browser) {
-      browser = await puppeteer.launch()
+      browser = await puppeteer.launch({args:['--no-sandbox']})
       translatorPage = await browser.newPage()
     }
     const page = translatorPage
@@ -209,9 +209,12 @@ module.exports = {
     const translation = await page.$$eval('div>span[lang]>span>span', e => e.map(i => i.textContent).join(' '))
     const translit = await page.$eval('[data-language]>[aria-hidden]>div', e => e.textContent)
     await page.click('[aria-label="Clear source text"]')
-    lastTranslate = {from, to}
+    Object.assign(lastTranslate, {from,to})
     translatorBusy = false
     return {translation, translit}
+  },
+  getTranslateCodes: () => {
+    return translateCodes
   },
   translateSupported: (code) => {
     return (translateCodes.find(l=>l.code===code)!==undefined)

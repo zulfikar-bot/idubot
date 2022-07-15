@@ -68,12 +68,12 @@ async function start() {
       )
 
       if (!msgDebug) {return}
+      await sock.sendPresenceUpdate('composing', room)
       const response = await processCommand(room,sender,msgDebug,quoted,isAdmin);
       if (!response) {return}
 
       for (let r of response) {
         if (typeof r === "string") {
-          await sock.sendPresenceUpdate('composing', room)
           await sock.sendMessage(room, { text: r });
         }
       }
@@ -246,7 +246,6 @@ const cmdList = [
     }
   },
   {name: "trans", info:'Google Translate', run: async (_, param, quoted) => {
-    return ['Fitur tersebut sedang dikembangkan']
     const [from, to] = param
     let text = param.slice(2).join(' ')
     if (!from||!to) {return [`⚠ Sertakan dengan kode bahasa asal dan target.\nContoh: ${prefix}trans en id Good morning`]}
@@ -266,7 +265,13 @@ const cmdList = [
       `${result.translit?`\n(${result.translit})`:''}`
     ]
   }},
-  {name: 'kodetrans', info:'Daftar kode bahasa G. Translate', run:()=>['Fitur ini sedang dikembangkan']},
+  {name: 'kodetrans', info:'Daftar kode bahasa G. Translate', run:()=>{
+    return[
+      '*Daftar Kode Bahasa Google Translate*\n'+
+      '*Bahasa ----- Kode*\n'+
+      bba.getTranslateCodes().map(l=>`${l.name} --- ${l.code}`).join('\n')
+    ]
+  }},
 
   // Owner Only
   {
