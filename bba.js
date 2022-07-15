@@ -192,6 +192,7 @@ module.exports = {
   },
   translate: async (from,to,text) => {
     const result = await request1('POST','http://idul-pup-services.herokapp.com/translate', null, JSON.stringify({from,to,text}))
+    console.log(result)
     return JSON.parse(result.response)
   },
   getTranslateCodes: () => {
