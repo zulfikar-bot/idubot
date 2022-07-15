@@ -114,4 +114,6 @@ module.exports = {
     return id
   },
   translate: async (from,to,text) => {
+    
+  },
 }
