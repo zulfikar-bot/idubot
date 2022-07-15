@@ -1,6 +1,7 @@
 const http = require("http");
 const fs = require("fs");
-const { randomInt } = require("crypto");
+const { randomInt } = require("crypto")
+const puppeteer = require('puppeteer')
 
 const baileys = require("@adiwajshing/baileys");
 const { useMultiFileAuthState, isJidGroup } = baileys;
@@ -11,14 +12,15 @@ const numberEnding = "@s.whatsapp.net";
 
 const bba = require("./bba");
 
-http
-  .createServer((_, res) => {
-    res.end("Server is running");
-  })
-  .listen(port);
+http.createServer((_, res) => {
+  res.end("Server is running");
+}).listen(port);
 console.log("Server runs at port", port);
 
 async function start() {
+  console.log('Launching browser...')
+  browser = await puppeteer.launch({args:['--no-sandbox']})
+  
   const { state, saveCreds } = await useMultiFileAuthState("./.data/wa_creds/");
   const sock = baileys.default({ auth: state });
   sock.ev.on("creds.update", saveCreds);
@@ -99,6 +101,7 @@ async function start() {
 const lessonList = bba.getLessonList();
 const codelist = Object.keys(lessonList);
 const codeliststring = codelist.join(", ");
+let browser
 
 // BOT CONTROL
 const prefix = "!";

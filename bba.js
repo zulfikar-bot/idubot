@@ -1,7 +1,6 @@
 const {download, request} = require('./tools')
 const {randomInt} = require('crypto')
 const fs = require('fs')
-const puppeteer = require('puppeteer')
 
 const agent = process.env.USER_AGENT
 const token = process.env.GITHUB_TOKEN
@@ -53,7 +52,15 @@ async function uploadFile(path, content) {
 }
 
 async function updateFile(path, content) {
-  
+  const fullPath = `https://api.github.com/repos/${repo}/contents/${path}`
+  const info = JSON.parse((await request('GET', fullPath, {headers:defaultHeader})).response)
+  await request('PUT', fullPath, {headers: defaultHeader},
+    JSON.stringify({
+      message:`Update file (${path})`,
+      content:Buffer.from(content).toString('base64'),
+      sha:info.sha
+    })
+  )
 }
 
 function saveFile(path, file, content) {
@@ -114,6 +121,21 @@ module.exports = {
     return id
   },
   translate: async (from,to,text) => {
-    
+    const page = this.translatorPage
+    while (this.translatorBusy) {
+      await new Promise(resolve=>setTimeout(resolve,500))
+    } this.translatorBusy = true
+    if (from!==this.lastTranslate?.from || to!==this.lastTranslate?.to) {
+      await page.goto(`https://translate.google.com?sl=${from}&tl=${to}`, {timeout:0})
+    } await page.keyboard.sendCharacter(text)
+    await page.waitForFunction(() => {
+      return document.querySelector('span>span>span[jsaction]')?.textContent
+    }, {timeout:0})
+    const translation = await page.$$eval('div>span[lang]>span>span', e => e.map(i => i.textContent).join(' '))
+    const translit = await page.$eval('[data-language]>[aria-hidden]>div', e => e.textContent)
+    await page.click('[aria-label="Clear source text"]')
+    this.lastTranslate = {from, to}
+    this.translatorBusy = false
+    return {translation, translit}
   },
 }
