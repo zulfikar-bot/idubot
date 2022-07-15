@@ -1,6 +1,7 @@
 const {download, request} = require('./tools')
 const {randomInt} = require('crypto')
 const fs = require('fs')
+const puppeteer = require('puppeteer')
 
 const agent = process.env.USER_AGENT
 const token = process.env.GITHUB_TOKEN
@@ -111,5 +112,6 @@ module.exports = {
     await uploadFile(`${code}/files/${filename}`)
     await updateFile(`${code}/list.json`, JSON.stringify(list))
     return id
-  }
+  },
+  translate: async (from,to,text) => {
 }

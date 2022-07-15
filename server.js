@@ -257,8 +257,14 @@ const cmdList = [
       tags = tags.split(",");
       const id = await bba.saveMaterial(code, title, tags, quoted);
       return [`✅ Materi tersimpan di nomor ${id}`];
-    },
-    {name:"trans", info:"Google Transate", run:async()=>{}},
+    }
+  },
+  {
+    name: "trans",
+    run: async (_, param) => {
+      const [from, to, text] = param
+      
+    }
   },
 
   // Owner Only
