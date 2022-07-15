@@ -260,8 +260,9 @@ const cmdList = [
     }
   },
   {
-    name: "trans",
+    name: "trans", info:'Google Translate',
     run: async (_, param) => {
+      return ['Fitur tersebut sedang dikembangkan']
       const [from, to, text] = param
       
     }
@@ -285,7 +286,7 @@ async function processCommand(room, sender, msg, quoted, isAdmin) {
     return;
   }
 
-  if ((sender||room) !== owner+numberEnding) {return [`Bot sementara dalam perbaikan`]}
+  //if ((sender||room) !== owner+numberEnding) {return [`Bot sementara dalam perbaikan`]}
 
   const inputs = msg.split(" ");
   const command = inputs[0].slice(1).toLowerCase();
