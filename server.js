@@ -1,7 +1,6 @@
 const http = require("http");
 const fs = require("fs");
 const { randomInt } = require("crypto")
-const puppeteer = require('puppeteer')
 
 const baileys = require("@adiwajshing/baileys");
 const { useMultiFileAuthState, isJidGroup } = baileys;
@@ -18,9 +17,6 @@ http.createServer((_, res) => {
 console.log("Server runs at port", port);
 
 async function start() {
-  console.log('Launching browser...')
-  browser = await puppeteer.launch({args:['--no-sandbox']})
-  
   const { state, saveCreds } = await useMultiFileAuthState("./.data/wa_creds/");
   const sock = baileys.default({ auth: state });
   sock.ev.on("creds.update", saveCreds);
@@ -64,32 +60,20 @@ async function start() {
       if (message.message?.imageMessage)
         msgDebug = "[IMAGE] " + message.message?.imageMessage.caption;
       else if (message.message?.audioMessage) msgDebug = "[AUDIO]";
-      else
-        msgDebug =
+      else msgDebug =
           message.message?.extendedTextMessage?.text ||
           message.message?.conversation;
       console.log(
-        `Message from ${message.pushName}: ${msgDebug}${
-          groupdata ? ` (${groupdata.subject})` : ""
-        }`
-      );
+        `Message from ${message.pushName}: ${msgDebug}${groupdata ? ` (${groupdata.subject})` : ""}`
+      )
 
-      if (!msgDebug) {
-        return;
-      }
-      const response = await processCommand(
-        room,
-        sender,
-        msgDebug,
-        quoted,
-        isAdmin
-      );
-      if (!response) {
-        return;
-      }
+      if (!msgDebug) {return}
+      const response = await processCommand(room,sender,msgDebug,quoted,isAdmin);
+      if (!response) {return}
 
       for (let r of response) {
         if (typeof r === "string") {
+          await sock.sendPresenceUpdate('composing', room)
           await sock.sendMessage(room, { text: r });
         }
       }
@@ -101,7 +85,6 @@ async function start() {
 const lessonList = bba.getLessonList();
 const codelist = Object.keys(lessonList);
 const codeliststring = codelist.join(", ");
-let browser
 
 // BOT CONTROL
 const prefix = "!";
@@ -282,12 +265,8 @@ const cmdList = [
 start();
 
 async function processCommand(room, sender, msg, quoted, isAdmin) {
-  if (!msg.startsWith(prefix)) {
-    return;
-  }
-  if (msg.length <= 1) {
-    return;
-  }
+  if (!msg.startsWith(prefix)) {return}
+  if (msg.length <= 1) {return}
 
   //if ((sender||room) !== owner+numberEnding) {return [`Bot sementara dalam perbaikan`]}
 

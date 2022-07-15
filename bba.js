@@ -1,6 +1,7 @@
 const {download, request} = require('./tools')
 const {randomInt} = require('crypto')
 const fs = require('fs')
+const puppeteer = require('puppeteer')
 
 const agent = process.env.USER_AGENT
 const token = process.env.GITHUB_TOKEN
@@ -27,6 +28,8 @@ for (let c of Object.keys(lessonList)) {
 
 const materialList = {}
 const fileCache = {}
+let browser, translatorPage, translatorBusy
+const lastTranslate = {from:'', to:''}
 
 async function getMaterialList(code) {
   if (!materialList[code]) {
@@ -121,11 +124,15 @@ module.exports = {
     return id
   },
   translate: async (from,to,text) => {
-    const page = this.translatorPage
-    while (this.translatorBusy) {
+    if (!browser) {
+      browser = await puppeteer.launch()
+      translatorPage = await browser.newPage()
+    }
+    const page = translatorPage
+    while (translatorBusy) {
       await new Promise(resolve=>setTimeout(resolve,500))
-    } this.translatorBusy = true
-    if (from!==this.lastTranslate?.from || to!==this.lastTranslate?.to) {
+    } translatorBusy = true
+    if (from!==lastTranslate?.from || to!==lastTranslate?.to) {
       await page.goto(`https://translate.google.com?sl=${from}&tl=${to}`, {timeout:0})
     } await page.keyboard.sendCharacter(text)
     await page.waitForFunction(() => {
