@@ -75,7 +75,7 @@ const cmdList = [
     '*MENU IDUBOT*\n============\n\n'+
     cmdList
       .filter(c=>!c.ownerOnly)
-      .map(c=>{c.section ? `\n[${c.section}]` : prefix+c.name+' - '+c.info})
+      .map(c=>{return c.section ? `\n[${c.section}]` : prefix+c.name+' - '+c.info})
       .join('\n')+
     `\n\nKontak owner: +${owner}`
   ]}},
