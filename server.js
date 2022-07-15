@@ -245,14 +245,15 @@ const cmdList = [
       return [`✅ Materi tersimpan di nomor ${id}`];
     }
   },
-  {
-    name: "trans", info:'Google Translate',
-    run: async (_, param) => {
-      return ['Fitur tersebut sedang dikembangkan']
-      const [from, to, text] = param
-      
-    }
-  },
+  {name: "trans", info:'Google Translate', run: async (_, param) => {
+    return ['Fitur tersebut sedang dikembangkan']
+    const [from, to] = param
+    let text = param.slice(2).join(' ')
+    if (!from||!to) {return [`⚠ Sertakan dengan kode bahasa asal dan target.\nContoh: ${prefix}trans en id Good morning`]}
+    if (!bba.translateSupported(from)) {return [`⚠ Kode *${from}* tidak dikenali. Ketik ${prefix}kodetrans untuk melihat daftar kode bahasa yang didukung.`]}
+    if (!bba.translateSupported(to)) {return [`⚠ Kode *${from}* tidak dikenali. Ketik ${prefix}kodetrans untuk melihat daftar kode bahasa yang didukung.`]}
+  }},
+  {name: 'kodetrans', info:'Daftar kode bahasa G. Translate', run:()=>['Fitur ini sedang dikembangkan']},
 
   // Owner Only
   {

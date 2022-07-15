@@ -30,6 +30,7 @@ const materialList = {}
 const fileCache = {}
 let browser, translatorPage, translatorBusy
 const lastTranslate = {from:'', to:''}
+const translateCodes = 
 
 async function getMaterialList(code) {
   if (!materialList[code]) {
@@ -141,8 +142,11 @@ module.exports = {
     const translation = await page.$$eval('div>span[lang]>span>span', e => e.map(i => i.textContent).join(' '))
     const translit = await page.$eval('[data-language]>[aria-hidden]>div', e => e.textContent)
     await page.click('[aria-label="Clear source text"]')
-    this.lastTranslate = {from, to}
-    this.translatorBusy = false
+    lastTranslate = {from, to}
+    translatorBusy = false
     return {translation, translit}
+  },
+  translateSupported: async (code) => {
+    return translateCodes
   },
 }
