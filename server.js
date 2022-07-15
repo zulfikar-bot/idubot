@@ -245,13 +245,26 @@ const cmdList = [
       return [`✅ Materi tersimpan di nomor ${id}`];
     }
   },
-  {name: "trans", info:'Google Translate', run: async (_, param) => {
+  {name: "trans", info:'Google Translate', run: async (_, param, quoted) => {
     return ['Fitur tersebut sedang dikembangkan']
     const [from, to] = param
     let text = param.slice(2).join(' ')
     if (!from||!to) {return [`⚠ Sertakan dengan kode bahasa asal dan target.\nContoh: ${prefix}trans en id Good morning`]}
     if (!bba.translateSupported(from)) {return [`⚠ Kode *${from}* tidak dikenali. Ketik ${prefix}kodetrans untuk melihat daftar kode bahasa yang didukung.`]}
-    if (!bba.translateSupported(to)) {return [`⚠ Kode *${from}* tidak dikenali. Ketik ${prefix}kodetrans untuk melihat daftar kode bahasa yang didukung.`]}
+    if (!bba.translateSupported(to)) {return [`⚠ Kode *${to}* tidak dikenali. Ketik ${prefix}kodetrans untuk melihat daftar kode bahasa yang didukung.`]}
+    if (!text) {text = quoted}
+    if (!text) {return [`⚠ Sertakan dengan teks.\nContoh: ${prefix}trans en id Good morning.\nAtau reply pesan yang berisi teks sambil menggunakan perintah.`]}
+    text = text.replace(/[_\*]/g,'')
+    if (text.length>5000) {return [`⚠ Teks terlalu panjang`]}
+    const result = await bba.translate(from, to, text)
+    const fromName = bba.getLanguageName(from)
+    const toName = bba.getLanguageName(to)
+    return [
+      `*Hasil Google Translate:*\n`+
+      `${fromName} → ${toName}\n`+
+      `${result.translation}`+
+      `${result.translit?`\n(${result.translit})`:''}`
+    ]
   }},
   {name: 'kodetrans', info:'Daftar kode bahasa G. Translate', run:()=>['Fitur ini sedang dikembangkan']},
 
