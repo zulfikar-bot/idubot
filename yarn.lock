@@ -2,7 +2,7 @@
 # yarn lockfile v1
 
 
-"@adiwajshing/baileys@github:adiwajshing/baileys":
+"@adiwajshing/baileys@^4.2.0":
   "resolved" "git+ssh://git@github.com/adiwajshing/baileys.git#3df968807dcccadf7b0714f5cafb6f5b5f438142"
   "version" "4.3.0"
   dependencies:
