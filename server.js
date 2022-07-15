@@ -16,9 +16,10 @@ http.createServer((_, res) => {
 }).listen(port);
 console.log("Server runs at port", port);
 
+let sock
 async function start() {
   const { state, saveCreds } = await useMultiFileAuthState("./.data/wa_creds/");
-  const sock = baileys.default({ auth: state });
+  sock = baileys.default({ auth: state });
   sock.ev.on("creds.update", saveCreds);
   sock.ev.on("connection.update", (update) => {
     if (update.qr) console.log(`RECEIVED QR\n${update.qr}`);
@@ -68,7 +69,6 @@ async function start() {
       )
 
       if (!msgDebug) {return}
-      await sock.sendPresenceUpdate('composing', room)
       const response = await processCommand(room,sender,msgDebug,quoted,isAdmin);
       if (!response) {return}
 
@@ -318,6 +318,7 @@ async function processCommand(room, sender, msg, quoted, isAdmin) {
   }
 
   const params = inputs.slice(1);
+  sock.sendPresenceUpdate('composing',room)
   return cmdList.find((c) => c.name === command).run(room, params, quoted);
 }
 
