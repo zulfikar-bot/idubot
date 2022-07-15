@@ -8,8 +8,8 @@
   },
   "dependencies": {
     "follow-redirects": "^1.15.1",
-    "@adiwajshing/baileys": "^4.2.0",
-    "puppeteer": "^15.3.2"
+    "puppeteer": "^15.3.2",
+    "yarn": "^1.22.19"
   },
   "engines": {
     "node": "16.x"
