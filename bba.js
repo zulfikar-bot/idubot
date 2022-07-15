@@ -192,8 +192,6 @@ module.exports = {
   },
   translate: async (from,to,text) => {
     if (!browser) {
-      //browser = await puppeteer.launch({args:['--no-sandbox']})
-      translatorPage = await browser.newPage()
     }
     const page = translatorPage
     while (translatorBusy) {
