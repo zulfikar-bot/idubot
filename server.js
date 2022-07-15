@@ -28,6 +28,8 @@ async function start() {
       } else {
         start()
       }
+    } else if (update.connection === 'open') {
+      console.log('Connection open')
     }
   })
   sock.ev.on('messages.upsert', async update => {
@@ -175,7 +177,7 @@ async function processCommand (room, sender, msg, quoted, isAdmin) {
   if (!msg.startsWith(prefix)) {return}
   if (msg.length <= 1) {return}
   
-  //if ((sender||room) !== owner+numberEnding) {return [`Bot sementara dalam perbaikan`]}
+  if ((sender||room) !== owner+numberEnding) {return [`Bot sementara dalam perbaikan`]}
   
   const inputs = msg.split(' ')
   const command = inputs[0].slice(1).toLowerCase()
