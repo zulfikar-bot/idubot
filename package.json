@@ -7,7 +7,7 @@
     "start": "node server.js"
   },
   "dependencies": {
-    "@adiwajshing/baileys": "^4.2.0",
+    "github:adiwajshing/baileys":"",
     "follow-redirects": "^1.15.1"
   },
   "engines": {
