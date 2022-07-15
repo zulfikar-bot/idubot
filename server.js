@@ -48,7 +48,7 @@ async function start() {
       else if (message.message?.audioMessage) msgDebug = '[AUDIO]'
       else msgDebug = (message.message?.extendedTextMessage?.text || message.message?.conversation)
       console.log(`Message from ${message.pushName}: ${msgDebug}${groupdata?` (${groupdata.subject})`:''}`)
-      
+
       if (!msgDebug) {return}
       const response = await processCommand(room, sender, msgDebug, quoted, isAdmin)
       if (!response) {return}
