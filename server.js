@@ -63,32 +63,8 @@ async function start() {
 }
 
 // Belajar Bahasa Asing
-const lessonList = {
-  en:'English', 
-  ja:'Nihon-go', 
-  de:'Deutsch', 
-  es:'Español'
-}
-const codelist = Object.keys(lessonList)
+const codelist = Object.keys(bba.getLessonCodes())
 const codeliststring = codelist.join(', ')
-
-const subbers = {}
-for (let c of Object.keys(lessonList)) {
-  const filename = './.data/bba/subbers/'+c+'.json'
-  if (fs.existsSync(filename)) {subbers[c]=require(filename)}
-  else {subbers[c]=[]}
-}
-
-function removeSubscription(room) {
-  for (let c of Object.keys(subbers)) {
-    const pos = subbers[c].indexOf(room)
-    if (pos !== -1) {
-      subbers[c].splice(pos,1)
-      saveFile('./.data/bba/subbers', c+'.json', JSON.stringify(subbers[c]))
-      return
-    }
-  }
-}
 
 // BOT CONTROL
 const prefix = '!'
@@ -200,11 +176,6 @@ async function processCommand (room, sender, msg, quoted, isAdmin) {
 
 function choose() {
   return arguments[randomInt(arguments.length)]
-}
-
-function saveFile(path, file, content) {
-  fs.mkdirSync(path, {recursive:true})
-  fs.writeFileSync(path+'/'+file, content)
 }
 
 function getSubCode(room, param, cmdName, exParam) {

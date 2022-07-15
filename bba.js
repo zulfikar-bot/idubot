@@ -1,5 +1,6 @@
 const {download, request} = require('./tools')
 const {randomInt} = require('crypto')
+const fs = require('fs')
 
 const agent = process.env.USER_AGENT
 const token = process.env.GITHUB_TOKEN
@@ -8,6 +9,20 @@ const repo = 'aidulcandra/materi-bahasa-asing'
 const defaultHeader = {
   'User-Agent': agent,
   'Authorization': 'token '+token
+}
+
+const lessonList = {
+  en:'English', 
+  ja:'Nihon-go', 
+  de:'Deutsch', 
+  es:'Español'
+}
+
+const subbers = {}
+for (let c of Object.keys(lessonList)) {
+  const filename = './.data/bba/subbers/'+c+'.json'
+  if (fs.existsSync(filename)) {subbers[c]=require(filename)}
+  else {subbers[c]=[]}
 }
 
 const materialList = {}
@@ -40,7 +55,23 @@ async function updateFile(path, content) {
   
 }
 
+function saveFile(path, file, content) {
+  fs.mkdirSync(path, {recursive:true})
+  fs.writeFileSync(path+'/'+file, content)
+}
+
 module.exports = {
+  getLessonCodes: () => lessonList,
+  removeSubscription: async (room) => {
+    for (let c of Object.keys(subbers)) {
+      const pos = subbers[c].indexOf(room)
+      if (pos !== -1) {
+        subbers[c].splice(pos,1)
+        saveFile('./.data/bba/subbers', c+'.json', JSON.stringify(subbers[c]))
+        return
+      }
+    }
+  },
   getRandomMaterial: async(code)=>{
     const list = await getMaterialList(code)
     return (await getFile(`${code}/files/${list[randomInt(list.length)].link}`))
