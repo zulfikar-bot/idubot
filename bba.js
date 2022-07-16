@@ -110,6 +110,12 @@ async function getFile(path) {
   return fileCache[path]
 }
 
+async function getRandomFile(path) {
+  const directory = await request('GET', `https://api.github.com/repos/${repo}/contents/${path}`, { headers: defaultHeader })
+  const list = JSON.parse(directory.response)
+  return await getFile(list[randomInt(list.length)].path)
+}
+
 function makeFilename(input,format) {
   return input.toLowerCase().replaceAll(/[^A-Z0-9 ]/gi,'').replaceAll(' ','-') + format
 }
@@ -276,5 +282,8 @@ module.exports = {
         const voiceCodes = {en:'en-GB',ja:'ja-JP',de:'de-DE',es:'es-ES'}
         audiofile = await tts(voiceCodes[code], text)
     } return { text, translation, audiofile, transcript }
+  },
+  getReadRecord: async()=>{
+    return getRandomFile('en/other/readrecord/')
   }
 }

@@ -294,8 +294,7 @@ const cmdList = [
   
   {section: 'Belajar English', lang:'en'},
   {name: 'rr', info:'Teks read and record', lang:'en', run:async()=>{
-    return ['Fitur ini sedang dikembangkan']
-    
+    return [await bba.getReadRecord()]
   }},
   {name: 'tt', info:'Teks tongue twister', lang:'en', run:async()=>{
     return ['Fitur ini sedang dikembangkan']
