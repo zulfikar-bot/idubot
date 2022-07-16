@@ -271,6 +271,24 @@ const cmdList = [
   }},
   
   {section: 'Belajar English', lang:'en'},
+  {name: 'rr', info:'Teks read and record', lang:'en', run:async()=>{
+    return ['Fitur ini sedang dikembangkan']
+  }},
+  {name: 'tt', info:'Teks tongue twister', lang:'en', run:async()=>{
+    return ['Fitur ini sedang dikembangkan']
+  }},
+  {name: 'dic', info:'Kamus Inggris-Inggris', lang:'en', run:async()=>{
+    return ['Fitur ini sedang dikembangkan']
+  }},
+  {name: 'col', info:'Kamus Collocation Bhs. Inggris', lang:'en', run:async()=>{
+    return ['Fitur ini sedang dikembangkan']
+  }},
+  {name: 'quote', info:'Quote bahasa Inggris', lang:'en', run:async()=>{
+    return ['Fitur ini sedang dikembangkan']
+  }},
+  {name: 'joke', info:'Lelucon bahasa Inggris', lang:'en', run:async()=>{
+    return ['Fitur ini sedang dikembangkan']
+  }},
 
   // Owner Only
   {
