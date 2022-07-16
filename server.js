@@ -198,36 +198,26 @@ const cmdList = [
       ];
     },
   },
-  {
-    name: "cari",
-    info: "Cari materi",
-    run: async (room, param) => {
-      const [code, params, error] = getSubCode(room, param, "cari", [
-        "tata bahasa",
-      ]);
-      if (!code) {
-        return [error];
-      }
-      const isGroup = isJidGroup(room);
-      if (!params.length) {
-        return [
-          `⚠ Sertakan dengan kata kunci.\nContoh: ${prefix}cari${
-            !isGroup ? " " + code : ""
-          } tata bahasa`,
-        ];
-      }
-      const result = await bba.searchMaterial(code, params);
+  { name: "cari", info: "Cari materi", run: async (room, param) => {
+    const [code, params, error] = getSubCode(room, param, "cari", ["tata bahasa"])
+    if (!code) {return [error]}
+    const isGroup = isJidGroup(room)
+    if (!params.length) {
       return [
-        `*Hasil pencarian materi ${lessonList[code]}*\n` +
-          `Kata kunci: ${params.join(" ")}\n\n` +
-          result.map((r) => `${r.i + 1}) ${r.title}`).join("\n") +
-          `\n\nUntuk menampilkan isi materi, gunakan perintah materi disertai dengan angka. Contoh:\n` +
-          `${prefix}materi${!isGroup ? " " + code : ""} ${
-            randomInt(result.length) + 1
-          }`,
-      ];
-    },
-  },
+        `⚠ Sertakan dengan kata kunci.\nContoh: ${prefix}cari${!isGroup ? " " + code : ""} tata bahasa`,
+      ]
+    }
+    const result = await bba.searchMaterial(code, params);
+    return [
+      `*Hasil pencarian materi ${lessonList[code]}*\n` +
+        `Kata kunci: ${params.join(" ")}\n\n` +
+        result.map((r) => `${r.i + 1}) ${r.title}`).join("\n") +
+        `\n\nUntuk menampilkan isi materi, gunakan perintah materi disertai dengan angka. Contoh:\n` +
+        `${prefix}materi${!isGroup ? " " + code : ""} ${
+          randomInt(result.length) + 1
+        }`,
+    ]
+  }},
   {
     name: "save",
     ownerOnly: true,
@@ -282,6 +272,30 @@ const cmdList = [
   }},
   {name: 'kalimat', info:'Contoh kalimat', run:async()=>{
     return ['Fitur ini sedang dikembangkan']
+    const [code, params, error] = getSubCode(room, param, "kalimat", [{en:'apple',ja:''}]);
+    if (!code) {return [error]}
+    const {code, params} = await this.getBBACode(f,'• !kalimat en\n• !kalimat en apple',p)
+    if (!code) return
+    const flag = { 'en':'🇬🇧', 'ja':'🇯🇵', 'de':'🇩🇪', 'es':'🇪🇸' }
+    if (!params.length) {
+        const sentence = await this.programs.bba.getTatoeba(code)
+        await this.sendText(f, 
+            '*Contoh Kalimat Acak*\n\n'+
+            `${flag[code]} ${sentence.text}\n`+
+            `${sentence.transcript?`(${sentence.transcript})\n`:''}`+
+            `🇮🇩 ${sentence.translation}`)
+        if (sentence.audiofile) await this.sock.sendMessage(f, {audio: {url:sentence.audiofile}, mimetype:'audio/mp4'})
+    } else {
+        const input = params.join(' ')
+        const sentence = await this.programs.bba.searchTatoeba(code, input)
+        if (!sentence) {await this.sendText(f, '⚠ Kalimat dengan kata kunci tersebut tidak ditemukan'); return}
+        await this.sendText(f, 
+            `*Contoh Kalimat:* ${input}\n\n`+
+            `${flag[code]} ${sentence.text}\n`+
+            `${sentence.transcript?`(${sentence.transcript})\n`:''}`+
+            `🇮🇩 ${sentence.translation}`)
+        if (sentence.audiofile) await this.sock.sendMessage(f, {audio: {url:sentence.audiofile}, mimetype:'audio/mp4'})
+    }
   }},
   
   {section: 'Belajar English', lang:'en'},
