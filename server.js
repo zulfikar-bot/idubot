@@ -16,12 +16,14 @@ http.createServer((_, res) => {
 }).listen(port);
 console.log("Server runs at port", port);
 
+fs.mkdirSync('./tmp', {recursive:true})
+
 let sock
 const retryMap = {}
 const tempStore = {}
 const getMessage = async (key) => {
   const {id} = key
-  if (!retryMap[id]) {retryMap[id] = 10}
+  if (retryMap[id]===undefined) {retryMap[id] = 10}
   if (retryMap[id] <= 0) {return undefined}
   console.log(`Retrying to send ${id}...`)
   retryMap[id] --

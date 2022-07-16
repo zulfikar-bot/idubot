@@ -260,9 +260,9 @@ module.exports = {
       'es': 'spa',
     }
     const list = await request('GET', `https://tatoeba.org/en/api_v0/search?from=${codeMapping[code]}&${keyword?`query="${keyword}"&`:''}orphans=no&sort=random&trans_filter=limit&unapproved=no`)
-    const {results,translations,transcriptions,audios,id} = JSON.parse(list.response)
+    const {results} = JSON.parse(list.response)
     if (!results.length) return
-    const text = results[randomInt(results.length)].text
+    const {text,translations,transcriptions,audios,id} = results[randomInt(results.length)]
     let transcript = transcriptions[0]?.text
     if (code === 'ja') {
       transcript = transcript.replaceAll(/(\[.+?\||\]|\|)/g, '')
