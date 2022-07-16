@@ -96,7 +96,9 @@ const cmdList = [
     return [
       "*MENU IDUBOT*\n============\n\n" +
         cmdList
-          .filter((c) => !c.ownerOnly)
+          .filter((c) => {
+            return !c.ownerOnly && (isPrivate||)
+          })
           .map((c) => {
             return c.section ?
             `\n[${c.section}]` :
