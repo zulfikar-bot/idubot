@@ -74,7 +74,7 @@ async function start() {
 
       for (let r of response) {
         if (typeof r === "string") {
-          await sock.sendMessage(room, { text: r });
+          await sock.sendMessage(room, { text: r }, { ephemeralExpiration: 86400 });
         }
       }
     }
