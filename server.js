@@ -89,29 +89,23 @@ const codeliststring = codelist.join(", ");
 // BOT CONTROL
 const prefix = "!";
 const cmdList = [
-  {
-    name: "ping",
-    info: "Tes respon bot",
-    run: () => [choose("Pong", "Halo", "Hadir", "Aktif")],
-  },
-  {
-    name: "menu",
-    info: "Tampilkan menu ini",
-    run: () => {
-      return [
-        "*MENU IDUBOT*\n============\n\n" +
-          cmdList
-            .filter((c) => !c.ownerOnly)
-            .map((c) => {
-              return c.section
-                ? `\n[${c.section}]`
-                : prefix + c.name + " - " + c.info;
-            })
-            .join("\n") +
-          `\n\nKontak owner: +${owner}`,
-      ];
-    },
-  },
+  {name: "ping", info: "Tes respon bot", run: () => [choose("Pong", "Halo", "Hadir", "Aktif")],},
+  {name: "menu", info: "Tampilkan menu ini", run: (room) => {
+    const isPrivate = !isJidGroup(room)
+    const subCode = bba.getSubCode(room)
+    return [
+      "*MENU IDUBOT*\n============\n\n" +
+        cmdList
+          .filter((c) => !c.ownerOnly)
+          .map((c) => {
+            return c.section ?
+            `\n[${c.section}]` :
+            prefix + c.name + " - " + c.info;
+          })
+          .join("\n") +
+      `\n\nKontak owner: +${owner}`,
+    ];
+  }},
 
   { section: "Belajar Bahasa Asing" },
   {
@@ -273,6 +267,8 @@ const cmdList = [
       bba.getTranslateCodes().map(l=>`${l.name} --- ${l.code}`).join('\n')
     ]
   }},
+  
+  {section: 'Belajar English', lang:'en'},
 
   // Owner Only
   {

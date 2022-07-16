@@ -158,6 +158,12 @@ module.exports = {
       }
     }
   },
+  getSubCode: (room) => {
+    let result = ''
+    for (let c of Object.keys(subbers)) {
+      if (subbers[c].includes(room)) {result = c; break}
+    } return result
+  },
   getRandomMaterial: async(code)=>{
     const list = await getMaterialList(code)
     return (await getFile(`${code}/files/${list[randomInt(list.length)].link}`))
