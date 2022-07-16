@@ -1,6 +1,7 @@
 const {download, request, request1} = require('./tools')
 const {randomInt} = require('crypto')
 const fs = require('fs')
+const puppeteer = require('puppeteer')
 
 const agent = process.env.USER_AGENT
 const token = process.env.GITHUB_TOKEN
@@ -191,12 +192,26 @@ module.exports = {
     return id
   },
   translate: async (from,to,text) => {
-    const result = await request1('POST',
-      'http://idul-pup-services.herokapp.com/translate', 
-      {headers:{"Accept":"application/json"}},
-      JSON.stringify({from,to,text}))
-    console.log(result)
-    return JSON.parse(result.response)
+    if (!browser) {
+      browser = await puppeteer.launch({args:['--no-sandbox']})
+      translatorPage = await browser.newPage()
+    }
+    const page = translatorPage
+    while (translatorBusy) {
+      await new Promise(resolve=>setTimeout(resolve,500))
+    } translatorBusy = true
+    if (from!==lastTranslate?.from || to!==lastTranslate?.to) {
+      await page.goto(`https://translate.google.com?sl=${from}&tl=${to}`, {timeout:0})
+    } await page.keyboard.sendCharacter(text)
+    await page.waitForFunction(() => {
+      return document.querySelector('span>span>span[jsaction]')?.textContent
+    }, {timeout:0})
+    const translation = await page.$$eval('div>span[lang]>span>span', e => e.map(i => i.textContent).join(' '))
+    const translit = await page.$eval('[data-language]>[aria-hidden]>div', e => e.textContent)
+    await page.click('[aria-label="Clear source text"]')
+    Object.assign(lastTranslate, {from,to})
+    translatorBusy = false
+    return {translation, translit}
   },
   getTranslateCodes: () => {
     return translateCodes
