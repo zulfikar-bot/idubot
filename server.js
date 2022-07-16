@@ -97,7 +97,7 @@ const cmdList = [
       "*MENU IDUBOT*\n============\n\n" +
         cmdList
           .filter((c) => {
-            return !c.ownerOnly && (isPrivate||)
+            return !c.ownerOnly && (isPrivate||(!c.lang||(subCode===c.lang)))
           })
           .map((c) => {
             return c.section ?
