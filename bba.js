@@ -191,7 +191,9 @@ module.exports = {
     return id
   },
   translate: async (from,to,text) => {
-    const result = await request1('POST','http://idul-pup-services.herokapp.com/translate', null, JSON.stringify({from,to,text}))
+    const result1 = await request1('GET','http://idul-pup-services.herkuapp.com')
+    console.log(result1)
+    const result = await request1('POST','http://idul-pup-services.herokapp.com/translate', {headers:{"Content-Type":"application/json"}}, JSON.stringify({from,to,text}))
     console.log(result)
     return JSON.parse(result.response)
   },
