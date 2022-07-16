@@ -277,26 +277,17 @@ const cmdList = [
     const [code, params, error] = getSubCode(room, param, "kalimat", ['','apple'])
     if (!code) {return [error]}
     const flag = { 'en':'🇬🇧', 'ja':'🇯🇵', 'de':'🇩🇪', 'es':'🇪🇸' }
-    if (!params.length) {
-      const sentence = await bba.getTatoeba(code)
-      return [
-        '*Contoh Kalimat Acak*\n\n'+
-        `${flag[code]} ${sentence.text}\n`+
-        `${sentence.transcript?`(${sentence.transcript})\n`:''}`+
-        `🇮🇩 ${sentence.translation}`
-      ]
-      if (sentence.audiofile) {return [{audio:sentence.audiofile}]}
-    } else {
-        const input = params.join(' ')
-        const sentence = await this.programs.bba.searchTatoeba(code, input)
-        if (!sentence) {await this.sendText(f, '⚠ Kalimat dengan kata kunci tersebut tidak ditemukan'); return}
-        await this.sendText(f, 
-            `*Contoh Kalimat:* ${input}\n\n`+
-            `${flag[code]} ${sentence.text}\n`+
-            `${sentence.transcript?`(${sentence.transcript})\n`:''}`+
-            `🇮🇩 ${sentence.translation}`)
-        if (sentence.audiofile) await this.sock.sendMessage(f, {audio: {url:sentence.audiofile}, mimetype:'audio/mp4'})
-    }
+    const sentence = await bba.getTatoeba(code, params.join(' '))
+    if (!sentence) {return ['⚠ Kalimat dengan kata kunci tersebut tidak ditemukan']}
+    const replies = []
+    replies.push(
+      '*Contoh Kalimat Acak*\n\n'+
+      `${flag[code]} ${sentence.text}\n`+
+      `${sentence.transcript?`(${sentence.transcript})\n`:''}`+
+      `🇮🇩 ${sentence.translation}`
+    )
+    if (sentence.audiofile) {replies.push({audio:sentence.audiofile})}
+    return replies
   }},
   
   {section: 'Belajar English', lang:'en'},

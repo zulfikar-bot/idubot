@@ -252,16 +252,17 @@ module.exports = {
     return translateCodes.find(l=>l.code===code).name
   },
   tts,
-  getTatoeba: async (code) => {
+  getTatoeba: async (code, keyword) => {
     const codeMapping = {
       'en': 'eng',
       'ja': 'jpn',
       'de': 'deu',
       'es': 'spa',
     }
-    const list = await request('GET', `https://tatoeba.org/en/api_v0/search?from=${codeMapping[code]}&orphans=no&sort=random&trans_filter=limit&unapproved=no`)
-    const result = JSON.parse(list.response).results[randomInt(10)]
-    const text = result.text
+    const list = await request('GET', `https://tatoeba.org/en/api_v0/search?from=${codeMapping[code]}&${keyword?`"${keyword}"`:''}orphans=no&sort=random&trans_filter=limit&unapproved=no`)
+    const result = JSON.parse(list.response)
+    if (!result.results.length) return
+    const text = result.results[randomInt(10)].text
     let transcript = result.transcriptions[0]?.text
     if (code === 'ja') {
       transcript = transcript.replaceAll(/(\[.+?\||\]|\|)/g, '')
