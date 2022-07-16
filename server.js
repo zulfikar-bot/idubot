@@ -269,6 +269,9 @@ const cmdList = [
       bba.getTranslateCodes().map(l=>`${l.name} --- ${l.code}`).join('\n')
     ]
   }},
+  {name: 'kalimat', info:'Contoh kalimat', run:async()=>{
+    return ['Fitur ini sedang dikembangkan']
+  }},
   
   {section: 'Belajar English', lang:'en'},
   {name: 'rr', info:'Teks read and record', lang:'en', run:async()=>{
