@@ -160,6 +160,28 @@ const translate = async (from,to,text) => {
   translatorBusy = false
   return {translation, translit}
 }
+const tts = async (voice,text) => {
+  const data = {engine: "Google", data: {text, voice}}
+  const result = await request('POST', 'https://api.soundoftext.com/sounds', 
+    {headers:{'Content-Type':'application/json'}}, JSON.stringify(data))
+  if (result.status!==200) {return result.status}
+  const id = JSON.parse(result.response).id
+  let url = ''
+  let retries = 10
+  while (true) {
+    const check = await request('GET', `https://api.soundoftext.com/sounds/${id}`)
+    if (check.status!==200) { return check.status }
+    const soundCheck = JSON.parse(check.response)
+    if (soundCheck.status==='Error') { return 0 }
+    else if (soundCheck.status==='Done') {url = soundCheck.location; break}
+    await new Promise(resolve=>setTimeout(resolve,1000))
+    retries --
+    if (!retries) {return 1}
+  }
+  const fname = `./tmp/${Date.now()}.mp3`
+  await download(url, fname)
+  return fname
+}
 
 module.exports = {
   getLessonList: () => lessonList,
@@ -229,6 +251,7 @@ module.exports = {
   getLanguageName: (code) => {
     return translateCodes.find(l=>l.code===code).name
   },
+  tts,
   getTatoeba: async (code) => {
     const codeMapping = {
       'en': 'eng',
@@ -250,7 +273,7 @@ module.exports = {
         await download(`https://audio.tatoeba.org/sentences/${codeMapping[code]}/${result.id}.mp3`, audiofile)
     } else {
         const voiceCodes = {en:'en-GB',ja:'ja-JP',de:'de-DE',es:'es-ES'}
-        audiofile = await this.tts(voiceCodes[code], text)
+        audiofile = await tts(voiceCodes[code], text)
     } return { text, translation, audiofile, transcript }
   }
 }

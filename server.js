@@ -86,6 +86,8 @@ async function start() {
         if (typeof r === "string") {
           const sent = await sock.sendMessage(room, { text: r }, { ephemeralExpiration: 86400 });
           tempStore[sent.key.id] = sent.message
+        } else if (typeof r === 'object') {
+          if (r.audio) {await sock.sendMessage(room, {audio:{url:r.audio}, mimetype:'audio/mp4'})}
         }
       }
     }
@@ -277,12 +279,13 @@ const cmdList = [
     const flag = { 'en':'🇬🇧', 'ja':'🇯🇵', 'de':'🇩🇪', 'es':'🇪🇸' }
     if (!params.length) {
       const sentence = await bba.getTatoeba(code)
-      await this.sendText(f, 
+      return [
         '*Contoh Kalimat Acak*\n\n'+
         `${flag[code]} ${sentence.text}\n`+
         `${sentence.transcript?`(${sentence.transcript})\n`:''}`+
-        `🇮🇩 ${sentence.translation}`)
-      if (sentence.audiofile) await this.sock.sendMessage(f, {audio: {url:sentence.audiofile}, mimetype:'audio/mp4'})
+        `🇮🇩 ${sentence.translation}`
+      ]
+      if (sentence.audiofile) {return [{audio:sentence.audiofile}]}
     } else {
         const input = params.join(' ')
         const sentence = await this.programs.bba.searchTatoeba(code, input)
