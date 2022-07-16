@@ -273,7 +273,7 @@ const cmdList = [
     ]
   }},
   {name: 'kalimat', info:'Contoh kalimat', run:async(room, param)=>{
-    return ['Fitur ini sedang dikembangkan']
+    //return ['Fitur ini sedang dikembangkan']
     const [code, params, error] = getSubCode(room, param, "kalimat", ['','apple'])
     if (!code) {return [error]}
     const flag = { 'en':'🇬🇧', 'ja':'🇯🇵', 'de':'🇩🇪', 'es':'🇪🇸' }

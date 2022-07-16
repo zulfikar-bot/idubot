@@ -259,19 +259,19 @@ module.exports = {
       'de': 'deu',
       'es': 'spa',
     }
-    const list = await request('GET', `https://tatoeba.org/en/api_v0/search?from=${codeMapping[code]}&${keyword?`"${keyword}"`:''}orphans=no&sort=random&trans_filter=limit&unapproved=no`)
-    const result = JSON.parse(list.response)
-    if (!result.results.length) return
-    const text = result.results[randomInt(10)].text
-    let transcript = result.transcriptions[0]?.text
+    const list = await request('GET', `https://tatoeba.org/en/api_v0/search?from=${codeMapping[code]}&${keyword?`query="${keyword}"&`:''}orphans=no&sort=random&trans_filter=limit&unapproved=no`)
+    const {results,translations,transcriptions,audios,id} = JSON.parse(list.response)
+    if (!results.length) return
+    const text = results[randomInt(results.length)].text
+    let transcript = transcriptions[0]?.text
     if (code === 'ja') {
       transcript = transcript.replaceAll(/(\[.+?\||\]|\|)/g, '')
-    } let translation = (result.translations[0].find(t=>t.lang==='ind') || result.translations[1].find(t=>t.lang==='ind'))?.text
+    } let translation = (translations[0].find(t=>t.lang==='ind') || translations[1].find(t=>t.lang==='ind'))?.text
     if (!translation) {translation = (await translate(code,'id',text)).translation+' (Google Translate)'}
     let audiofile
-    if (result.audios.length) {
+    if (audios.length) {
         audiofile = `./tmp/${Date.now()}.mp3`
-        await download(`https://audio.tatoeba.org/sentences/${codeMapping[code]}/${result.id}.mp3`, audiofile)
+        await download(`https://audio.tatoeba.org/sentences/${codeMapping[code]}/${id}.mp3`, audiofile)
     } else {
         const voiceCodes = {en:'en-GB',ja:'ja-JP',de:'de-DE',es:'es-ES'}
         audiofile = await tts(voiceCodes[code], text)
