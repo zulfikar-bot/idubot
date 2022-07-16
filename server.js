@@ -102,7 +102,7 @@ const cmdList = [
           .map((c) => {
             return c.section ?
             `\n[${c.section}]` :
-            prefix + c.name + " - " + c.info;
+            '*'+prefix+c.name+"* - " + c.info;
           })
           .join("\n") +
       `\n\nKontak owner: +${owner}`,
