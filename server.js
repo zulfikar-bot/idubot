@@ -19,8 +19,13 @@ console.log("Server runs at port", port);
 a
 let sock
 const retryMap = {}
+const tempStore = {}
 const getMessage = async (key) => {
   if (!retryMap[key]) {retryMap[key] = 10}
+  if (retryMap[key] <= 0) {return undefined}
+  console.log(`Retrying to send ${key}...`)
+  retryMap[key] --
+  return tempStore[key]
 }
 async function start() {
   const { state, saveCreds } = await useMultiFileAuthState("./.data/wa_creds/");
@@ -79,7 +84,8 @@ async function start() {
 
       for (let r of response) {
         if (typeof r === "string") {
-          await sock.sendMessage(room, { text: r }, { ephemeralExpiration: 86400 });
+          const sent = await sock.sendMessage(room, { text: r }, { ephemeralExpiration: 86400 });
+          
         }
       }
     }
