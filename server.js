@@ -16,10 +16,15 @@ http.createServer((_, res) => {
 }).listen(port);
 console.log("Server runs at port", port);
 
+a
 let sock
+const retryMap = {}
+const getMessage = async (key) => {
+  if (!retryMap[key]) {retryMap[key] = 10}
+}
 async function start() {
   const { state, saveCreds } = await useMultiFileAuthState("./.data/wa_creds/");
-  sock = baileys.default({ auth: state });
+  sock = baileys.default({ auth: state, getMessage });
   sock.ev.on("creds.update", saveCreds);
   sock.ev.on("connection.update", (update) => {
     if (update.qr) console.log(`RECEIVED QR\n${update.qr}`);
