@@ -138,6 +138,28 @@ function saveFile(path, file, content) {
   fs.mkdirSync(path, {recursive:true})
   fs.writeFileSync(path+'/'+file, content)
 }
+const translate = async (from,to,text) => {
+  if (!browser) {
+    browser = await puppeteer.launch({args:['--no-sandbox']})
+    translatorPage = await browser.newPage()
+  }
+  const page = translatorPage
+  while (translatorBusy) {
+    await new Promise(resolve=>setTimeout(resolve,500))
+  } translatorBusy = true
+  if (from!==lastTranslate?.from || to!==lastTranslate?.to) {
+    await page.goto(`https://translate.google.com?sl=${from}&tl=${to}`, {timeout:0})
+  } await page.keyboard.sendCharacter(text)
+  await page.waitForFunction(() => {
+    return document.querySelector('span>span>span[jsaction]')?.textContent
+  }, {timeout:0})
+  const translation = await page.$$eval('div>span[lang]>span>span', e => e.map(i => i.textContent).join(' '))
+  const translit = await page.$eval('[data-language]>[aria-hidden]>div', e => e.textContent)
+  await page.click('[aria-label="Clear source text"]')
+  Object.assign(lastTranslate, {from,to})
+  translatorBusy = false
+  return {translation, translit}
+}
 
 module.exports = {
   getLessonList: () => lessonList,
@@ -197,28 +219,7 @@ module.exports = {
     await updateFile(`${code}/list.json`, JSON.stringify(list))
     return id
   },
-  translate: async (from,to,text) => {
-    if (!browser) {
-      browser = await puppeteer.launch({args:['--no-sandbox']})
-      translatorPage = await browser.newPage()
-    }
-    const page = translatorPage
-    while (translatorBusy) {
-      await new Promise(resolve=>setTimeout(resolve,500))
-    } translatorBusy = true
-    if (from!==lastTranslate?.from || to!==lastTranslate?.to) {
-      await page.goto(`https://translate.google.com?sl=${from}&tl=${to}`, {timeout:0})
-    } await page.keyboard.sendCharacter(text)
-    await page.waitForFunction(() => {
-      return document.querySelector('span>span>span[jsaction]')?.textContent
-    }, {timeout:0})
-    const translation = await page.$$eval('div>span[lang]>span>span', e => e.map(i => i.textContent).join(' '))
-    const translit = await page.$eval('[data-language]>[aria-hidden]>div', e => e.textContent)
-    await page.click('[aria-label="Clear source text"]')
-    Object.assign(lastTranslate, {from,to})
-    translatorBusy = false
-    return {translation, translit}
-  },
+  translate,
   getTranslateCodes: () => {
     return translateCodes
   },
@@ -228,4 +229,28 @@ module.exports = {
   getLanguageName: (code) => {
     return translateCodes.find(l=>l.code===code).name
   },
+  getTatoeba: async (code) => {
+    const codeMapping = {
+      'en': 'eng',
+      'ja': 'jpn',
+      'de': 'deu',
+      'es': 'spa',
+    }
+    const list = await request('GET', `https://tatoeba.org/en/api_v0/search?from=${codeMapping[code]}&orphans=no&sort=random&trans_filter=limit&unapproved=no`)
+    const result = JSON.parse(list.response).results[randomInt(10)]
+    const text = result.text
+    let transcript = result.transcriptions[0]?.text
+    if (code === 'ja') {
+      transcript = transcript.replaceAll(/(\[.+?\||\]|\|)/g, '')
+    } let translation = (result.translations[0].find(t=>t.lang==='ind') || result.translations[1].find(t=>t.lang==='ind'))?.text
+    if (!translation) {translation = (await translate(code,'id',text)).translation+' (Google Translate)'}
+    let audiofile
+    if (result.audios.length) {
+        audiofile = `./tmp/${Date.now()}.mp3`
+        await download(`https://audio.tatoeba.org/sentences/${codeMapping[code]}/${result.id}.mp3`, audiofile)
+    } else {
+        const voiceCodes = {en:'en-GB',ja:'ja-JP',de:'de-DE',es:'es-ES'}
+        audiofile = await this.tts(voiceCodes[code], text)
+    } return { text, translation, audiofile, transcript }
+  }
 }

@@ -270,21 +270,19 @@ const cmdList = [
       bba.getTranslateCodes().map(l=>`${l.name} --- ${l.code}`).join('\n')
     ]
   }},
-  {name: 'kalimat', info:'Contoh kalimat', run:async()=>{
+  {name: 'kalimat', info:'Contoh kalimat', run:async(room, param)=>{
     return ['Fitur ini sedang dikembangkan']
-    const [code, params, error] = getSubCode(room, param, "kalimat", [{en:'apple',ja:''}]);
+    const [code, params, error] = getSubCode(room, param, "kalimat", ['','apple'])
     if (!code) {return [error]}
-    const {code, params} = await this.getBBACode(f,'• !kalimat en\n• !kalimat en apple',p)
-    if (!code) return
     const flag = { 'en':'🇬🇧', 'ja':'🇯🇵', 'de':'🇩🇪', 'es':'🇪🇸' }
     if (!params.length) {
-        const sentence = await this.programs.bba.getTatoeba(code)
-        await this.sendText(f, 
-            '*Contoh Kalimat Acak*\n\n'+
-            `${flag[code]} ${sentence.text}\n`+
-            `${sentence.transcript?`(${sentence.transcript})\n`:''}`+
-            `🇮🇩 ${sentence.translation}`)
-        if (sentence.audiofile) await this.sock.sendMessage(f, {audio: {url:sentence.audiofile}, mimetype:'audio/mp4'})
+      const sentence = await bba.getTatoeba(code)
+      await this.sendText(f, 
+        '*Contoh Kalimat Acak*\n\n'+
+        `${flag[code]} ${sentence.text}\n`+
+        `${sentence.transcript?`(${sentence.transcript})\n`:''}`+
+        `🇮🇩 ${sentence.translation}`)
+      if (sentence.audiofile) await this.sock.sendMessage(f, {audio: {url:sentence.audiofile}, mimetype:'audio/mp4'})
     } else {
         const input = params.join(' ')
         const sentence = await this.programs.bba.searchTatoeba(code, input)
