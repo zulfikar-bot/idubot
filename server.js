@@ -295,6 +295,7 @@ const cmdList = [
   {section: 'Belajar English', lang:'en'},
   {name: 'rr', info:'Teks read and record', lang:'en', run:async()=>{
     return ['Fitur ini sedang dikembangkan']
+    
   }},
   {name: 'tt', info:'Teks tongue twister', lang:'en', run:async()=>{
     return ['Fitur ini sedang dikembangkan']
