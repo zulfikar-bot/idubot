@@ -1,3 +1,5 @@
+const aliveStart = Date.now()
+
 const http = require("http");
 const fs = require("fs");
 const { randomInt } = require("crypto")
@@ -328,6 +330,8 @@ async function processCommand(room, sender, msg, quoted, isAdmin) {
 
   //if ((sender||room) !== owner+numberEnding) {return [`Bot sementara dalam perbaikan`]}
 
+  const aliveTime = Date.now() - aliveStart //miliseconds
+  
   const inputs = msg.split(" ");
   const command = inputs[0].slice(1).toLowerCase();
 
