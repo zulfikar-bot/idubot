@@ -49,10 +49,10 @@ async function start() {
       }
     } else if (update.connection === "open") {
       console.log("Connection open");
+      ready = true
     }
     if (update.receivedPendingNotifications) {
       console.log("Ready");
-      ready = true
     }
   });
   sock.ev.on("messages.upsert", async (update) => {
