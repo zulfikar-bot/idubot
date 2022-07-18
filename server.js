@@ -13,9 +13,13 @@ const numberEnding = "@s.whatsapp.net";
 
 const bba = require("./bba");
 
-http.createServer((_, res) => {
+let ready = false
+const server = http.createServer(async (_, res) => {
+  if (!ready) {await return Promise()}
   res.end("Server is running");
-}).listen(port);
+})
+
+server.listen(port);
 console.log("Server runs at port", port);
 
 fs.mkdirSync('./tmp', {recursive:true})
@@ -45,6 +49,9 @@ async function start() {
       }
     } else if (update.connection === "open") {
       console.log("Connection open");
+    }
+    if (update.receivedPendingNotifications) {
+      console.log("Ready");
     }
   });
   sock.ev.on("messages.upsert", async (update) => {
