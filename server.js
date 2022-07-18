@@ -15,7 +15,7 @@ const bba = require("./bba");
 
 let ready = false
 const server = http.createServer(async (_, res) => {
-  if (!ready) {await return Promise()}
+  if (!ready) {return await Promise((resolve)=>setTimeout(resolve,1000))}
   res.end("Server is running");
 })
 
@@ -52,6 +52,7 @@ async function start() {
     }
     if (update.receivedPendingNotifications) {
       console.log("Ready");
+      ready = true
     }
   });
   sock.ev.on("messages.upsert", async (update) => {
