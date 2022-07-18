@@ -15,7 +15,7 @@ const bba = require("./bba");
 
 let ready = false
 const server = http.createServer(async (_, res) => {
-  while (!ready) {await Promise((resolve)=>setTimeout(resolve,1000))}
+  while (!ready) {await new Promise((resolve)=>setTimeout(resolve,1000))}
   res.end("Server is running");
 })
 
