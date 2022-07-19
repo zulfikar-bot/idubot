@@ -292,5 +292,29 @@ module.exports = {
   getDefinition: async(query)=>{
     const result = await request('GET', 'https://api.dictionaryapi.dev/api/v2/entries/en/'+query)
     return result.response
+  },
+  getCollocation: async(input)=>{
+    const result = await request('GET',`https://ozdic.com/collocation/${input}.txt`)
+    if (result.status === 200) {
+      let text = result.response
+      text = text.replaceAll('<DIV class="item"><P class="word"><B>', '💠 *')
+        .replaceAll(' </B>', '* ')
+        .replaceAll('<I>', '_')
+        .replaceAll(' </I>', '_ ')
+        .replaceAll(' * ','')
+        .replaceAll(' </P>','')
+        .replaceAll('<P> ','')
+        .replaceAll('<SUP> ','')
+        .replaceAll(' </SUP>',') ')
+        .replaceAll(' <TT> ', '')
+        .replaceAll(' </TT>','')
+        .replaceAll('<U> ', '[')
+        .replaceAll(' </U><B> ', '] *')
+        .replaceAll('<B>','*')
+        .replaceAll('</B>',' ')
+        .replaceAll('</DIV>','')
+        .replaceAll(/<a href.*<\/a>/g, '')
+      return text
+    } else {return result.status}
   }
 }

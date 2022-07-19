@@ -312,28 +312,32 @@ const cmdList = [
     return [await bba.getTongueTwister()]
   }},
   {name: 'dic', info:'Kamus Inggris-Inggris', lang:'en', run:async(_,param)=>{
-    return ['Fitur ini sedang dikembangkan']
     if (!param[0]) {return [`⚠ Sertakan dengan kata yang akan dicari.\nContoh: ${prefix}dic study`]}
       const query = param.join(' ')
       const result = JSON.parse(await bba.getDefinition(query))
       if (!result[0]) {return [`Kata tidak ditemukan`]}
       return [
-          result.map(r=>{
-              return `📖 *${r.word}* ${r.phonetic||''}\n`+
-              r.meanings.map(m=>{
-                  return `[${m.partOfSpeech}]\n`+
-                  m.definitions.map((d,i)=>{
-                      return `${i+1}) ${d.definition}`+
-                      (d.example?`\n*Ex:* ${d.example}`:'')
-                  }).join('\n')+
-                  (m.synonyms.length?`\n*Synonyms:* _${m.synonyms.join(', ')}_`:'')+
-                  (m.antonyms.length?`\n*Antonyms:* _${m.antonyms.join(', ')}_`:'')
-              }).join('\n')
-          }).join('\n\n')
+        result.map(r=>{
+          return `📖 *${r.word}* ${r.phonetic||''}\n`+
+          r.meanings.map(m=>{
+            return `[${m.partOfSpeech}]\n`+
+            m.definitions.map((d,i)=>{
+                return `${i+1}) ${d.definition}`+
+                (d.example?`\n*Ex:* ${d.example}`:'')
+            }).join('\n')+
+            (m.synonyms.length?`\n*Synonyms:* _${m.synonyms.join(', ')}_`:'')+
+            (m.antonyms.length?`\n*Antonyms:* _${m.antonyms.join(', ')}_`:'')
+          }).join('\n')
+        }).join('\n\n')
       ]
   }},
-  {name: 'col', info:'Kamus Collocation Bhs. Inggris', lang:'en', run:async()=>{
-    return ['Fitur ini sedang dikembangkan']
+  {name: 'col', info:'Kamus Collocation Bhs. Inggris', lang:'en', run:async(_,param)=>{
+    const input = param[0]
+    if (!input) {return [`⚠ Sertakan dengan kata yang ingin dicari.\nContoh: ${prefix}col look`]}
+    const result = await bba.getCollocation(input)
+    if (result===404) {return [`⚠ Kata tersebut tidak ditemukan`]}
+    else if (typeof result === 'string') {return [result]}
+    else {return ['⚠ Terjadi error pada server kamus']}
   }},
   {name: 'quote', info:'Quote bahasa Inggris', lang:'en', run:async()=>{
     return ['Fitur ini sedang dikembangkan']
