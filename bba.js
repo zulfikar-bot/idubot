@@ -285,5 +285,12 @@ module.exports = {
   },
   getReadRecord: async()=>{
     return getRandomFile('en/other/readrecord/')
+  },
+  getTongueTwister: async()=>{
+    return getRandomFile('en/other/tonguetwister/')
+  },
+  getDefinition: async(query)=>{
+    const result = await request('GET', 'https://api.dictionaryapi.dev/api/v2/entries/en/'+query)
+    return result.response
   }
 }

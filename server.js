@@ -18,6 +18,7 @@ let ready = false
 const server = http.createServer(async (_, res) => {
   while (!ready) {await new Promise((resolve)=>setTimeout(resolve,1000))}
   res.end("Server is running");
+  console.log('Server was pinged')
 })
 
 server.listen(port);
@@ -308,10 +309,28 @@ const cmdList = [
     return [await bba.getReadRecord()]
   }},
   {name: 'tt', info:'Teks tongue twister', lang:'en', run:async()=>{
-    return ['Fitur ini sedang dikembangkan']
+    return [await bba.getTongueTwister()]
   }},
-  {name: 'dic', info:'Kamus Inggris-Inggris', lang:'en', run:async()=>{
+  {name: 'dic', info:'Kamus Inggris-Inggris', lang:'en', run:async(_,param)=>{
     return ['Fitur ini sedang dikembangkan']
+    if (!param[0]) {return [`⚠ Sertakan dengan kata yang akan dicari.\nContoh: ${prefix}dic study`]}
+      const query = param.join(' ')
+      const result = JSON.parse(await bba.getDefinition(query))
+      if (!result[0]) {return [`Kata tidak ditemukan`]}
+      return [
+          result.map(r=>{
+              return `📖 *${r.word}* ${r.phonetic||''}\n`+
+              r.meanings.map(m=>{
+                  return `[${m.partOfSpeech}]\n`+
+                  m.definitions.map((d,i)=>{
+                      return `${i+1}) ${d.definition}`+
+                      (d.example?`\n*Ex:* ${d.example}`:'')
+                  }).join('\n')+
+                  (m.synonyms.length?`\n*Synonyms:* _${m.synonyms.join(', ')}_`:'')+
+                  (m.antonyms.length?`\n*Antonyms:* _${m.antonyms.join(', ')}_`:'')
+              }).join('\n')
+          }).join('\n\n')
+      ]
   }},
   {name: 'col', info:'Kamus Collocation Bhs. Inggris', lang:'en', run:async()=>{
     return ['Fitur ini sedang dikembangkan']
@@ -346,8 +365,7 @@ async function processCommand(room, sender, msg, quoted, isAdmin) {
   if (aliveTime > 4*60*1000) {
     aliveStart = Date.now()
     const test = await request('GET', 'https://idubot.glitch.me')
-    console.log(test)
-    await sock.sendMessage(owner+numberEnding, {text:`Test:\n${test}`})
+    //await sock.sendMessage(owner+numberEnding, {text:`Test:\n${test}`})
   }
   
   const inputs = msg.split(" ");
