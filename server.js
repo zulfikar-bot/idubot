@@ -324,10 +324,11 @@ const cmdList = [
   }},
 
   // Owner Only
-  {
-    name: "showsub",
-    ownerOnly: true,
+  { name: "showsub", ownerOnly: true, 
     run: () => [JSON.stringify(bba.getSubbers(), null, 1)],
+  },
+  { name: "alivetime", ownerOnly: true, 
+    run: () => [`Time alive: ${Date.now() - aliveStart}`],
   },
 ];
 
@@ -341,13 +342,12 @@ async function processCommand(room, sender, msg, quoted, isAdmin) {
 
   const aliveTime = Date.now() - aliveStart //miliseconds
   
-  // This will only ping the app if needed, it will not always triggered
+  // This will only ping the app if needed, it will not always be triggered
   if (aliveTime > 4*60*1000) {
-    await request('GET', 'https://idubot.glitch.me')
-    .then(console.log(request))
     aliveStart = Date.now()
-    
-    
+    const test = await request('GET', 'https://idubot.glitch.me')
+    console.log(test)
+    await sock.sendMessage(owner+numberEnding, {text:`Test:\n${test}`})
   }
   
   const inputs = msg.split(" ");
