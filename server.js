@@ -1,6 +1,7 @@
-const aliveStart = Date.now()
+let aliveStart = Date.now()
 
 const http = require("http");
+const {request} = require('./tools')
 const fs = require("fs");
 const { randomInt } = require("crypto")
 
@@ -339,6 +340,15 @@ async function processCommand(room, sender, msg, quoted, isAdmin) {
   //if ((sender||room) !== owner+numberEnding) {return [`Bot sementara dalam perbaikan`]}
 
   const aliveTime = Date.now() - aliveStart //miliseconds
+  
+  // This will only ping the app if needed, it will not always triggered
+  if (aliveTime > 4*60*1000) {
+    await request('GET', 'https://idubot.glitch.me')
+    .then(console.log(request))
+    aliveStart = Date.now()
+    
+    
+  }
   
   const inputs = msg.split(" ");
   const command = inputs[0].slice(1).toLowerCase();
