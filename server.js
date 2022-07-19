@@ -339,11 +339,33 @@ const cmdList = [
     else if (typeof result === 'string') {return [result]}
     else {return ['⚠ Terjadi error pada server kamus']}
   }},
+  {name: 'read', info:'Bacakan teks bahasa Inggris', lang:'en', run:async(_,param,quoted)=>{
+    const accentcode = { am:'en-US', br:'en-GB', au:'en-AU' }
+    const accent = param[0]
+    if (!accent) {return [`⚠ Sertakan kode aksen (am: Amerika, br:British, au:Australia)\nContoh: ${prefix}read am Good morning`]}
+    if (!Object.keys(accentcode).includes(accent)) {return [`⚠ Kode aksen tidak terdeteksi. Silakan gunakan kode aksen setelah 'read'\n(am: Amerika, br:British, au:Australia)\nContoh: ${prefix}read am Good morning`]}
+    let text = param.slice(1).join(' ')
+    if (!text) {text = quoted}
+    if (!text) {return [`⚠ Sertakan dengan teks yang akan dibacakan. Contoh: ${prefix}read am Good morning\nAtau gunakan perintah sambil me-reply pesan yang berisi teks.`]}
+    if (text.length>=200) {return ['⚠ Teks terlalu panjang']}
+    const filename = await bba.tts(accentcode[accent], text)
+    if (typeof filename === 'number') {return [`🙈 Terjadi error ketika menghubungi server. (${filename})`]}
+    return [{audio: filename}]
+  }},
   {name: 'quote', info:'Quote bahasa Inggris', lang:'en', run:async()=>{
-    return ['Fitur ini sedang dikembangkan']
+    const result = JSON.parse((await request('GET','https://api.forismatic.com/api/1.0/?method=getQuote&lang=en&format=json')).response)
+    return [`_${result.quoteText}_\n- ${result.quoteAuthor||'Anonymous'}`.replace(/ +_/,'_')]
   }},
   {name: 'joke', info:'Lelucon bahasa Inggris', lang:'en', run:async()=>{
-    return ['Fitur ini sedang dikembangkan']
+    let joke
+    switch (randomInt(2)) {
+      case 0: {
+        joke = (await request('GET', 'https://v2.jokeapi.dev/joke/Miscellaneous,Pun?blacklistFlags=nsfw,religious,racist&format=txt')).response; break
+      } case 1: {
+        joke = (await request('GET', 'https://icanhazdadjoke.com/', {headers:{'Accept':'text/plain'}})).response; break
+      }
+    }
+    return[joke]
   }},
 
   // Owner Only
