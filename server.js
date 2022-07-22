@@ -367,6 +367,10 @@ const cmdList = [
     }
     return[joke]
   }},
+  {name: "fact", lang:"en", info:"Random useless fact", run:async()=>{
+    const result = await request('GET','https://uselessfacts.jsph.pl/random.json?language=en')
+    return [JSON.parse(result.response).text]
+  }},
 
   // Owner Only
   { name: "showsub", ownerOnly: true, 
