@@ -367,9 +367,14 @@ const cmdList = [
     }
     return[joke]
   }},
-  {name: "fact", lang:"en", info:"Random useless fact", run:async()=>{
-    const result = await request('GET','https://uselessfacts.jsph.pl/random.json?language=en')
-    return [JSON.parse(result.response).text]
+  {name: "fact", lang:"en", info:"Random fact", run:async()=>{
+    switch (randomInt(2)) {
+       case 0: {
+         return [JSON.parse((await request('GET','https://uselessfacts.jsph.pl/random.json?language=en')).response).text]
+       } case 1: {
+         return [JSON.parse((await request('GET','https://asli-fun-fact-api.herokuapp.com/')).response).data.fact]
+       }
+    }
   }},
 
   // Owner Only
