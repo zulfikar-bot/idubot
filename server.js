@@ -101,31 +101,15 @@ async function start() {
       if (!msgDebug) {return}
       //console.log(JSON.stringify(message,null,1))
       
-      const handleReply = async (reply) => {
-        
-      }
-      
       if (quoted) {
         const keyId = message.message?.extendedTextMessage?.contextInfo?.stanzaId
         const cb = choices[keyId]
-        if (cb) {}
+        if (cb) {await handleReply(room, await cb(msgDebug))}
       }
+      
       const response = await processCommand(room,sender,msgDebug,quoted,isAdmin);
-      if (!response) {return}
-
-      for (let r of response) {
-        if (typeof r === "string") {
-          const sent = await sock.sendMessage(room, { text: r }, { ephemeralExpiration: 86400 });
-          tempStore[sent.key.id] = sent.message
-        } else if (typeof r === 'object') {
-          if (r.audio) {await sock.sendMessage(room, {audio:{url:r.audio}, mimetype:'audio/mp4'}); return}
-          if (r.image) {await sock.sendMessage(room, {image:{url:r.image}, caption:r.caption}); return}
-          if (r.choice) {
-            const sent = await sock.sendMessage(room, {text:r.choice}, {ephemeralExpiration: 86400})
-            choices[sent.key.id] = r.callback
-          }
-        }
-      }
+      if (!response) {return} 
+      await handleReply(room,response)
     }
   });
 }
@@ -419,7 +403,7 @@ const cmdList = [
     return [{image:results.results[randomInt(results.results.length)]}]
   }},
   {name:'lirik', info:'Cari lirik lagu', run:async(r,p)=>{
-    return ['Fitur ini sedang dikembangkan']
+    //return ['Fitur ini sedang dikembangkan']
     if (!p.length) {return [`Sertakan dengan kata kunci.\nContoh: ${prefix}linkin park numb`]}
     const result = JSON.parse((await request('GET', `https://api.happi.dev/v1/music?q=${p.join(' ')}&lyrics=true`, {headers:{
       'x-happi-key':happiKey
@@ -428,7 +412,7 @@ const cmdList = [
     return [
       {
         choice:
-          result.result.map((r,i)=>`${i+1}) ${r.artist} - ${r.track}`) +
+          result.result.map((r,i)=>`${i+1}) ${r.artist} - ${r.track}`).join('\n') +
           `\n\nReply ke pesan ini dengan angka. Jika tak ada respon lakukan pencarian ulang.`,
         callback:async(n)=>{
           if (!result.result[n-1]) {return ['Balas dengan angka yang tersedia pada pilihan']}
@@ -499,6 +483,22 @@ async function processCommand(room, sender, msg, quoted, isAdmin) {
   const params = inputs.slice(1);
   sock.sendPresenceUpdate('composing',room)
   return cmdList.find((c) => c.name === command).run(room, params, quoted);
+}
+
+async function handleReply (room, response) {
+  for (let r of response) {
+    if (typeof r === "string") {
+      const sent = await sock.sendMessage(room, { text: r }, { ephemeralExpiration: 86400 });
+      tempStore[sent.key.id] = sent.message
+    } else if (typeof r === 'object') {
+      if (r.audio) {await sock.sendMessage(room, {audio:{url:r.audio}, mimetype:'audio/mp4'}); return}
+      if (r.image) {await sock.sendMessage(room, {image:{url:r.image}, caption:r.caption}); return}
+      if (r.choice) {
+        const sent = await sock.sendMessage(room, {text:r.choice}, {ephemeralExpiration: 86400})
+        choices[sent.key.id] = r.callback
+      }
+    }
+  }
 }
 
 function choose() {
