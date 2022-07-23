@@ -82,8 +82,10 @@ async function start() {
         (p) => p.id === sender
       ).admin;
       let msgDebug;
-      if (message.message?.imageMessage)
-        msgDebug = "[IMAGE] " + message.message?.imageMessage.caption;
+      if (message.message?.imageMessage) {
+        msgDebug = "[IMAGE] " + message.message?.imageMessage.caption
+        console.log(message)  
+      }
       else if (message.message?.audioMessage) msgDebug = "[AUDIO]";
       else msgDebug =
           message.message?.extendedTextMessage?.text ||
