@@ -99,6 +99,10 @@ async function start() {
       )
 
       if (!msgDebug) {return}
+      if (quoted) {
+        const keyId = 
+          message.message?.extendedTextMessage?.contextInfo?.quotedMessage
+      }
       const response = await processCommand(room,sender,msgDebug,quoted,isAdmin);
       if (!response) {return}
 
