@@ -402,16 +402,26 @@ const cmdList = [
     return [{image:results.results[randomInt(results.results.length)]}]
   }},
   {name:'lirik', info:'Cari lirik lagu', run:async(r,p)=>{
-    //return ['Fitur ini sedang dikembangkan']
+    return ['Fitur ini sedang dikembangkan']
     if (!p.length) {return [`Sertakan dengan kata kunci.\nContoh: ${prefix}linkin park numb`]}
     const result = JSON.parse((await request('GET', `https://api.happi.dev/v1/music?q=${p.join(' ')}&lyrics=true`, {headers:{
       'x-happi-key':happiKey
     }})).response)
     if (!result.length) {return ['Lirik tidak ditemukan']}
-    const result2 = JSON.parse((await request('GET', result.result[0].api_lyrics, {headers:{
-      'x-happi-key':happiKey
-    }})).response)
-    return [result2.result.lyrics]
+    return [
+      {
+        choice:
+         result.result.map((r,i)=>`${i+1}) ${r.artist} - ${r.track}`) +
+        `\n\nReply ke pesan ini dengan angka.`,
+       callback:async(n)=>{
+         const result2 = JSON.parse((await request('GET', result.result[0].api_lyrics, {headers:{
+            'x-happi-key':happiKey
+          }})).response)
+          return [result2.result.lyrics]
+       }
+      }
+    ]
+    
   }},
 
   // Owner Only
