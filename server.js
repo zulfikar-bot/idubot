@@ -28,6 +28,8 @@ console.log("Server runs at port", port);
 
 fs.mkdirSync('./tmp', {recursive:true})
 
+const choices = {}
+
 let sock
 const retryMap = {}
 const tempStore = {}
@@ -107,6 +109,10 @@ async function start() {
         } else if (typeof r === 'object') {
           if (r.audio) {await sock.sendMessage(room, {audio:{url:r.audio}, mimetype:'audio/mp4'}); return}
           if (r.image) {await sock.sendMessage(room, {image:{url:r.image}, caption:r.caption}); return}
+          if (r.choice) {
+            const sent = await sock.sendMessage(room, {text:r.choice}, {ephemeralExpiration: 86400})
+            choices[sent.key.id] = r.callback
+          }
         }
       }
     }
@@ -411,10 +417,11 @@ const cmdList = [
     return [
       {
         choice:
-         result.result.map((r,i)=>`${i+1}) ${r.artist} - ${r.track}`) +
-        `\n\nReply ke pesan ini dengan angka.`,
-       callback:async(n)=>{
-         const result2 = JSON.parse((await request('GET', result.result[0].api_lyrics, {headers:{
+          result.result.map((r,i)=>`${i+1}) ${r.artist} - ${r.track}`) +
+          `\n\nReply ke pesan ini dengan angka. Jika tak ada respon lakukan pencarian ulang.`,
+        callback:async(n)=>{
+          if (!result.result[n-1]) {return ['Balas dengan angka yang tersedia pada pilihan']}
+          const result2 = JSON.parse((await request('GET', result.result[n-1].api_lyrics, {headers:{
             'x-happi-key':happiKey
           }})).response)
           return [result2.result.lyrics]
