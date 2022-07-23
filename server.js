@@ -393,10 +393,10 @@ const cmdList = [
   }},
   
   {section:'Alat'},
-  {name:'cg', info:'Cari gambar', run:async(r,p)=>{
+  {name:'gambar', info:'Cari gambar', run:async(r,p)=>{
     //return ['Fitur ini sedang dikembangkan']
     if (!p.length) {return [`Sertakan dengan kata kunci. Contoh:\n${prefix}cg kucing`]}
-    const results = JSON.parse(await request('GET', 'https://imsea.herokuapp.com/api/1?q='+p.join(' ')).response)
+    const results = JSON.parse((await request('GET', 'https://imsea.herokuapp.com/api/1?q='+p.join(' '))).response)
     if (!results.results.length) {return ['Gambar tidak ditemukan']}
     return [{image:results.results[randomInt(results.results.length)]}]
   }},
