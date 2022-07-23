@@ -378,6 +378,9 @@ const cmdList = [
        }
     }
   }},
+  {name: "advice", lang:'en', info:'Random advice', run:async()=>{
+    return [JSON.parse((await request('GET','https://api.adviceslip.com/advice')).response).slip.advice]
+  }},
 
   // Owner Only
   { name: "showsub", ownerOnly: true, 
