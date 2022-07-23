@@ -376,6 +376,11 @@ const cmdList = [
        }
     }
   }},
+  
+  {section:"Alat"},
+  {name:"imread", info:"Ekstrak teks dari gambar", run:async(r,p,quoted)=>{
+    return ['Fitur ini sedang dikembangkan']
+  }},
 
   // Owner Only
   { name: "showsub", ownerOnly: true, 
