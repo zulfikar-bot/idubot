@@ -396,6 +396,8 @@ const cmdList = [
     return ['Fitur ini sedang dikembangkan']
     if (!p.length) {return [`Sertakan dengan kata kunci. Contoh:\n${prefix}cg kucing`]}
     const results = JSON.parse(await request('GET', 'https://imsea.herokuapp.com/api/1?q='+p.join(' ')))
+    if (!results.results.length) {return ['Gambar tidak ditemukan']}
+    
   }},
 
   // Owner Only
