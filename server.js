@@ -103,7 +103,8 @@ async function start() {
           const sent = await sock.sendMessage(room, { text: r }, { ephemeralExpiration: 86400 });
           tempStore[sent.key.id] = sent.message
         } else if (typeof r === 'object') {
-          if (r.audio) {await sock.sendMessage(room, {audio:{url:r.audio}, mimetype:'audio/mp4'})}
+          if (r.audio) {await sock.sendMessage(room, {audio:{url:r.audio}, mimetype:'audio/mp4'}); return}
+          
         }
       }
     }
@@ -397,7 +398,7 @@ const cmdList = [
     if (!p.length) {return [`Sertakan dengan kata kunci. Contoh:\n${prefix}cg kucing`]}
     const results = JSON.parse(await request('GET', 'https://imsea.herokuapp.com/api/1?q='+p.join(' ')))
     if (!results.results.length) {return ['Gambar tidak ditemukan']}
-    
+    return [{image:results.results[randomInt(results.results.length)]}]
   }},
 
   // Owner Only
