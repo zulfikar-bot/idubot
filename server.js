@@ -99,9 +99,16 @@ async function start() {
       )
 
       if (!msgDebug) {return}
+      //console.log(JSON.stringify(message,null,1))
+      
+      const handleReply = async (reply) => {
+        
+      }
+      
       if (quoted) {
-        const keyId = 
-          message.message?.extendedTextMessage?.contextInfo?.quotedMessage
+        const keyId = message.message?.extendedTextMessage?.contextInfo?.stanzaId
+        const cb = choices[keyId]
+        if (cb) {}
       }
       const response = await processCommand(room,sender,msgDebug,quoted,isAdmin);
       if (!response) {return}
