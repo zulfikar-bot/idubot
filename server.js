@@ -355,8 +355,17 @@ const cmdList = [
     return [{audio: filename}]
   }},
   {name: 'quote', info:'Quote bahasa Inggris', lang:'en', run:async()=>{
-    const result = JSON.parse((await request('GET','https://api.forismatic.com/api/1.0/?method=getQuote&lang=en&format=json')).response)
-    return [`_${result.quoteText}_\n- ${result.quoteAuthor||'Anonymous'}`.replace(/ +_/,'_')]
+    let result
+    switch (randomInt(2)) {
+      case 0: {
+        result = JSON.parse((await request('GET','https://api.forismatic.com/api/1.0/?method=getQuote&lang=en&format=json')).response)
+        return [`_${result.quoteText}_\n- ${result.quoteAuthor||'Anonymous'}`.replace(/ +_/,'_')]
+      } case 1: {
+        result = JSON.parse((await request('GET', 'https://api.fisenko.net/v1/quotes/en/random')).response)
+        return [`_${result.text}_\n- ${result.author?.name||'Anonymous'}`.replace(/ +_/,'_')]
+      }
+    }
+    
   }},
   {name: 'joke', info:'Lelucon bahasa Inggris', lang:'en', run:async()=>{
     let joke
