@@ -12,6 +12,8 @@ const port = process.env.PORT || 3000;
 const owner = process.env.OWNER;
 const numberEnding = "@s.whatsapp.net";
 
+const happiKey = process.env.HAPPI
+
 const bba = require("./bba");
 
 let ready = false
@@ -402,7 +404,12 @@ const cmdList = [
   }},
   {name:'lirik', info:'Cari lirik lagu', run:async(r,p)=>{
     return ['Fitur ini sedang dikembangkan']
-    if (!p.length) {return ['Sertakan dengan kata kunci.\nContoh:``]}
+    if (!p.length) {return [`Sertakan dengan kata kunci.\nContoh: ${prefix}lirik westlife my love`]}
+    const result = JSON.parse((await request('GET', `https://api.happi.dev/v1/music?q=${p.join(' ')}&lyrics=true`, {headers:{
+      'x-happi-key':happiKey
+    }})).response)
+    if (!result.length) {return ['Lirik tidak ditemukan']}
+    const result2 = JSON.parse((await request('GET')))
   }},
 
   // Owner Only
