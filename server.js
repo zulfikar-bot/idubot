@@ -400,6 +400,10 @@ const cmdList = [
     if (!results.results.length) {return ['Gambar tidak ditemukan']}
     return [{image:results.results[randomInt(results.results.length)]}]
   }},
+  {name:'lirik', info:'Cari lirik lagu', run:async(r,p)=>{
+    return ['Fitur ini sedang dikembangkan']
+    if (!p.length) {return ['Sertakan dengan kata kunci.\nContoh:``]}
+  }},
 
   // Owner Only
   { name: "showsub", ownerOnly: true, 
