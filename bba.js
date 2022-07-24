@@ -1,10 +1,11 @@
-const {download, request} = require('./tools')
+const {download, request, submitForm} = require('./tools')
 const {randomInt} = require('crypto')
 const fs = require('fs')
 const puppeteer = require('puppeteer')
 
 const agent = process.env.USER_AGENT
 const token = process.env.GITHUB_TOKEN
+const ocrKey = process.env.OCR
 const repo = 'aidulcandra/materi-bahasa-asing'
 const dataPath = './.data/bba'
 
@@ -320,10 +321,16 @@ module.exports = {
   },
   ocr:{
     languages:[
-      {name:'English', code:'ara'}, {name:'Bulgarian', code:'ara'}, 
+      {name:'English', code:'eng'}, {name:'Japanese', code:'jpn'}, {name:'German', code:'ger'},
+      {name:'Spanish', code:'spa'}, {name:'Arabic', code:'ara'}, {name:'Korean', code:'kor'},  
+      {name:'Chinese (Simplified)', code:'chs'}, {name:'Chinese (Traditional)', code:'cht'},  
     ],
     extractText: async(stream, language) => {
-    
+      const result = await submitForm(
+        {protocol:'https:', host:'api.ocr.space', path:'/parse/image', headers:{apikey:ocrKey}},
+        {file:stream, language}, true
+      )
+      return result.ParsedResults
     } 
   }
 }
