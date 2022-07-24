@@ -116,7 +116,7 @@ async function start() {
 
 
 // COMMAND HANDLER
-const prefix = "!";
+const prefix = "/^[°•π÷×¶∆£¢€¥®™+✓_=|~!?@#$%^&.©^]/gi";
 async function processCommand(room, sender, text, quoted, isAdmin, messageObject, quotedMessage, quotedKey) {
   if (!text.startsWith(prefix)) {return}
   if (text.length <= 1) {return}
@@ -168,7 +168,7 @@ const cmdList = [
     const isPrivate = !isJidGroup(room)
     const subCode = bba.getSubCode(room)
     return [
-      "*MENU Zulfikar *\n============\n\n" +
+      "*MENU Zulfikar-Bot 2*\n============\n\n" +
         cmdList
           .filter((c) => {
             return !c.ownerOnly && (isPrivate||(!c.lang||(subCode===c.lang)))
