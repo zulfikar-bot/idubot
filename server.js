@@ -1,13 +1,14 @@
 let aliveStart = Date.now()
 
+// MODULES
 const http = require("http");
 const {request, submitForm} = require('./tools')
 const fs = require("fs");
 const { randomInt } = require("crypto")
-
 const baileys = require("@adiwajshing/baileys");
 const { useMultiFileAuthState, isJidGroup, downloadMediaMessage } = baileys;
 
+// ENVIRONMENT VARIABLES
 const port = process.env.PORT || 3000;
 const owner = process.env.OWNER;
 const numberEnding = "@s.whatsapp.net";
@@ -15,6 +16,7 @@ const numberEnding = "@s.whatsapp.net";
 const happiKey = process.env.HAPPI
 const apiNinjasKey = process.env.APININJAS
 
+// M
 const bba = require("./bba");
 
 let ready = false
@@ -108,7 +110,7 @@ async function start() {
         if (cb) {await handleReply(room, await cb(msgDebug))}
       }
       
-      const response = await processCommand(room,sender,msgDebug,quoted,isAdmin);
+      const response = await processCommand(room,sender,msgDebug,quoted,isAdmin,message);
       if (!response) {return} 
       await handleReply(room,response)
     }
@@ -425,8 +427,8 @@ const cmdList = [
       path:'/v1/imagetotext',
       headers:{
         'X-Api-Key':apiNinjasKey
-      }, [{key:'image', value:fs.createReadStream}]
-    })
+      },
+    }, [{key:'image', value:fs.createReadStream}])
   }},
 
   // Owner Only
@@ -450,7 +452,7 @@ async function getJson(url, options) {
   return (await request('GET', url, options, null, true)).response
 }
 
-async function processCommand(room, sender, msg, quoted, isAdmin) {
+async function processCommand(room, sender, msg, quoted, isAdmin, msgObject) {
   if (!msg.startsWith(prefix)) {return}
   if (msg.length <= 1) {return}
 
@@ -495,7 +497,7 @@ async function processCommand(room, sender, msg, quoted, isAdmin) {
 
   const params = inputs.slice(1);
   sock.sendPresenceUpdate('composing',room)
-  return cmdList.find((c) => c.name === command).run(room, params, quoted, media);
+  return cmdList.find((c) => c.name === command).run(room, params, quoted, msgObject);
 }
 
 async function handleReply (room, response) {
