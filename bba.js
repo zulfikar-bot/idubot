@@ -330,6 +330,7 @@ module.exports = {
         {protocol:'https:', host:'api.ocr.space', path:'/parse/image', headers:{apikey:ocrKey}},
         {file:stream, language}, true
       )
+      if (result.isErroredOnProcessing) {return ['Error: '+result.ErrorMessage]}
       return result.ParsedResults[0].ParsedText
     } 
   }
