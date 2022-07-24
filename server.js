@@ -1,7 +1,7 @@
 let aliveStart = Date.now()
 
 const http = require("http");
-const {request} = require('./tools')
+const {request, submitForm} = require('./tools')
 const fs = require("fs");
 const { randomInt } = require("crypto")
 
@@ -420,7 +420,13 @@ const cmdList = [
   }},
   {name:'imread', info:'Ambil teks dari gambar', run:async(r,p,q)=>{
     return ['Fitur ini sedang dikembangkan']
-    
+    const result = await submitForm({
+      host:'https://api.api-ninjas.com',
+      path:'/v1/imagetotext',
+      headers:{
+        'X-Api-Key':apiNinjasKey
+      }, [{key:'image', value:fs.createReadStream}]
+    })
   }},
 
   // Owner Only

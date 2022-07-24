@@ -35,18 +35,22 @@ module.exports = {
       } req.end()
     })
   },
-  submitForm: (options, contents)=>{
-    return new Promise((resolve,reject))
-    const form = new FormData()
-    for (let c of contents) {
-      form.append(c.key, c.value)
-    }
-    form.submit(options, (e,r)=>{
-      let data = ''
-      r.on('data', (chunk)=>{
-        data += chunk
-      }).on('end', ()=>{
-        console.log(data)
+  submitForm: (options, contents, parse)=>{
+    return new Promise((resolve,reject) => {
+      const form = new FormData()
+      for (let c of contents) {
+        form.append(c.key, c.value)
+      }
+      form.submit(options, (e,r)=>{
+        let data = ''
+        r.on('data', (chunk)=>{
+          data += chunk
+        }).on('end', ()=>{
+          console.log('Submit form:', r.statusCode)
+          resolve({status:r.statusCode, response:(parse?JSON.parse(data):data)})
+        }).on('error', e=>{
+          reject(e)
+        })
       })
     })
   }
