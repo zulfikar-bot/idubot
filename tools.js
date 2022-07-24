@@ -15,7 +15,7 @@ module.exports = {
         }).on('error', e=>reject(e))
     })
   },
-  request : (method, url, options, data) => {
+  request : (method, url, options, data, parse) => {
     return new Promise((resolve, reject) => {
       const req = https.request(url, Object.assign({method},options), res => {
         const data = []
@@ -24,7 +24,7 @@ module.exports = {
         }).on('end', () => {
           console.log(`${method} at ${url}:`, res.statusCode)
           const fullData = Buffer.concat(data).toString()
-          resolve({status:res.statusCode, response:fullData})
+          resolve({status:res.statusCode, response:(parse?JSON.parse(fullData):fullData)})
         }).on('error', (e)=>{
           reject(e)
         })

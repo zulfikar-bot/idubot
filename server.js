@@ -362,7 +362,7 @@ const cmdList = [
     let result
     switch (randomInt(2)) {
       case 0: {
-        result = JSON.parse((await request('GET','https://api.forismatic.com/api/1.0/?method=getQuote&lang=en&format=json')).response)
+        result = (await request('GET','https://api.forismatic.com/api/1.0/?method=getQuote&lang=en&format=json', null, null, true)).response
         return [`_${result.quoteText}_\n- ${result.quoteAuthor||'Anonymous'}`.replace(/ +_/,'_')]
       } case 1: {
         result = JSON.parse((await request('GET', 'https://api.fisenko.net/v1/quotes/en/random')).response)
