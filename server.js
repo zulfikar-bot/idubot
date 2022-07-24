@@ -13,6 +13,7 @@ const owner = process.env.OWNER;
 const numberEnding = "@s.whatsapp.net";
 
 const happiKey = process.env.HAPPI
+const apiNinjasKey = process.env.APININJAS
 
 const bba = require("./bba");
 
@@ -363,29 +364,25 @@ const cmdList = [
       {url:'https://api.forismatic.com/api/1.0/?method=getQuote&lang=en&format=json', f:(r)=>[r.quoteText, r.quoteAuthor]},
       {url:'https://api.fisenko.net/v1/quotes/en/random', f:(r)=>[r.text, r.author?.name]}
     ]
-    const picked = sources[randomInt(sources.length)]
-    const result = picked.format==='text'?(await request('GET', picked.url, picked.options)).response:(await getJson(picked.url))
-    const [text, author] = picked.f(result)
+    const [text, author] = await randomRequest(sources)
     return [`_${text}_\n- ${author||'Anonymous'}`.replace(/ +_/,'_')]
   }},
   {name: 'joke', info:'Lelucon bahasa Inggris', lang:'en', run:async()=>{
     const sources = [
       {url:'https://v2.jokeapi.dev/joke/Miscellaneous,Pun?blacklistFlags=nsfw,religious,racist&format=txt', format:'text'},
-      {url:'https://icanhazdadjoke.com/', o{headers:{Accept:'text/plain'}}, true]
+      {url:'https://icanhazdadjoke.com/', options:{headers:{Accept:'text/plain'}}, format:'text'}
     ]
-    const picked = sources[randomInt(sources.length)]
-    const result = picked[3]?(await request('GET', picked[0], picked[2])).response:(await getJson(picked[0]))
-    const joke = picked
-    return [picked[1]?picked[1](result):result]
+    const joke = await randomRequest(sources)
+    return [joke]
   }},
   {name: "fact", lang:"en", info:"Random fact", run:async()=>{
-    switch (randomInt(2)) {
-       case 0: {
-         return [JSON.parse((await request('GET','https://uselessfacts.jsph.pl/random.json?language=en')).response).text]
-       } case 1: {
-         return [JSON.parse((await request('GET','https://asli-fun-fact-api.herokuapp.com/')).response).data.fact]
-       }
-    }
+    const sources = [
+      {url:'https://uselessfacts.jsph.pl/random.json?language=en', f:(r)=>r.text},
+      {url:'https://asli-fun-fact-api.herokuapp.com/', f:(r)=>r.data.fact},
+      {url:'https://api.api-ninjas.com/v1/facts', options:{headers:{'X-Api-Key':APININJAS}}}
+    ]
+    const fact = await randomRequest(sources)
+    return [fact]
   }},
   {name: "advice", lang:'en', info:'Random advice', run:async()=>{
     return [JSON.parse((await request('GET','https://api.adviceslip.com/advice')).response).slip.advice]
@@ -432,6 +429,12 @@ const cmdList = [
 ];
 
 start();
+
+async function randomRequest(sources) {
+  const picked = sources[randomInt(sources.length)]
+  const result = picked.format==='text'?(await request('GET', picked.url, picked.options)).response:(await getJson(picked.url))
+  return picked.f?picked.f(result):result
+}
 
 async function getJson(url, options) {
   return (await request('GET', url, options, null, true)).response
