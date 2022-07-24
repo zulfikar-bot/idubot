@@ -397,17 +397,22 @@ const cmdList = [
     
   }},
   {name:'imread', info:'Ambil teks dari gambar', run:async(r,p,q,m,qm)=>{
-    //return ['Fitur ini sedang dikembangkan']
+    return ['Fitur ini sedang dikembangkan']
     const lang = p[0]
     if (!lang || !bba.ocr.languages.find(l=>l.code===lang)) {
       return [
         `Sertakan kode bahasa dari teks. Contoh: ${prefix}imread eng\n\nKode:${bba.ocr.languages.map(l=>`${l.name}(${l.code})`).join(', ')}`
       ]
     }
-    console.log(qm)
-    let imgMsg = m.imageMessage || qm?.imageMessage
-    if (!imgMsg) {return ['Gunakan perintah sebagai caption dari gambar. Atau reply pesan berisi gambar.']}
-    const stream = await downloadMediaMessage(imgMsg, 'stream', {}, {reuploadRequest:sock.updateMediaMessage})
+    let msgObj
+    if (m.imageMessage) {
+      msgObj = m
+    } else if (qm.imageMessage) {
+      msgObj = qm
+    } else {
+      return ['Gunakan perintah sebagai caption dari gambar. Atau reply pesan berisi gambar.']
+    }
+    const stream = await downloadMediaMessage(msgObj, 'stream', {}, {reuploadRequest:sock.updateMediaMessage})
     const result = await bba.ocr.extractText(stream, lang)
     return [result]
   }},
