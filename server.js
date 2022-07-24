@@ -163,8 +163,8 @@ const choices = {}
 
 // BOT CONTROL
 const cmdList = [
-  {name: "ping", info: "Tes respon bot", run: () => [choose("Pong", "Halo", "Hadir", "Aktif")],},
-  {name: "menu", info: "Tampilkan menu ini", run: (room) => {
+  {name: "iping", info: "Tes respon bot", run: () => [choose("Pong", "Halo", "Hadir", "Aktif")],},
+  {name: "remenu", info: "Tampilkan menu ini", run: (room) => {
     const isPrivate = !isJidGroup(room)
     const subCode = bba.getSubCode(room)
     return [
