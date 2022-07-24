@@ -71,6 +71,8 @@ async function start() {
       if (message.key.fromMe) continue;
       const room = message.key.remoteJid;
       if (room === "status@broadcast") continue;
+      if (!message.message) continue;
+      
       const sender = message.key.participant;
       const quoted =
         message.message?.extendedTextMessage?.contextInfo?.quotedMessage
@@ -81,7 +83,21 @@ async function start() {
         ? await sock.groupMetadata(room) : undefined;
       const isAdmin = groupdata?.participants.find((p) => p.id === sender).admin;
       
-      let msgDebug;
+      const msgType = Object.keys(message.message)[0]
+      
+      let body = '';
+      switch (msgType) {
+        case 'conversation':{
+          body = message.message.conversation; break;
+        } case 'extendedTextMessage': {
+          body = message.message.extendedTextMessage.text; break;
+        } case 'imageMessage':{
+          body = message.message.imageMessage.caption; break;
+        } case 'videoMessage':{
+          body = message.message.videoMessage.caption; break;
+        }
+      } console.log(`Message from ${message.pushName}: `)
+      
       if (message.message?.imageMessage) {
         msgDebug = "[IMAGE] " + message.message?.imageMessage.caption
         console.log(message)  
