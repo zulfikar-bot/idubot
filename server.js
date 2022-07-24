@@ -397,8 +397,10 @@ const cmdList = [
     ]
     
   }},
-  {name:'imread', info:'Ambil teks dari gambar', run:async(r,p,q,m)=>{
+  {name:'imread', info:'Ambil teks dari gambar', run:async(r,p,q,m,qb)=>{
     return ['Fitur ini sedang dikembangkan']
+    let imgMsg
+    if (!m.imageMessage) {return ['Gunakan perintah sebagai caption dari gambar. Atau reply pesan berisi gambar.']}
     const result = await submitForm({
       host:'https://api.api-ninjas.com',
       path:'/v1/imagetotext',
