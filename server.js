@@ -74,49 +74,35 @@ async function start() {
       if (!message.message) continue;
       
       const sender = message.key.participant;
-      const quoted =
-        message.message?.extendedTextMessage?.contextInfo?.quotedMessage
-          ?.conversation ||
-        message.message?.extendedTextMessage?.contextInfo?.quotedMessage
-          ?.extendedTextMessage?.text;
       const groupdata = isJidGroup(room)
         ? await sock.groupMetadata(room) : undefined;
       const isAdmin = groupdata?.participants.find((p) => p.id === sender).admin;
       
       const msgType = Object.keys(message.message)[0]
       
-      let body = '';
+      let body = '', quotedBody, quotedMessage;
       switch (msgType) {
         case 'conversation':{
           body = message.message.conversation; break;
         } case 'extendedTextMessage': {
-          body = message.message.extendedTextMessage.text; break;
+          const etm = message.message.extendedTextMessage
+          body = etm.text; break;
+          quotedMessage = etm.contextInfo?.quotedMessage
+          quotedBody = quotedMessage?.conversation || quotedMessage?.extendedTextMessage?.text
         } case 'imageMessage':{
           body = message.message.imageMessage.caption; break;
         } case 'videoMessage':{
           body = message.message.videoMessage.caption; break;
         }
-      } console.log(`Message from ${message.pushName}: `)
-      
-      if (message.message?.imageMessage) {
-        msgDebug = "[IMAGE] " + message.message?.imageMessage.caption
-        console.log(message)  
-      }
-      else if (message.message?.audioMessage) msgDebug = "[AUDIO]";
-      else msgDebug =
-          message.message?.extendedTextMessage?.text ||
-          message.message?.conversation;
-      console.log(
-        `Message from ${message.pushName}: ${msgDebug}${groupdata ? ` (${groupdata.subject})` : ""}`
-      )
+      } console.log(`${msgType} from ${message.pushName}: ${body}${groupdata ? ` (${groupdata.subject})` : ""}`)
 
-      if (!msgDebug) {return}
+      if (!body) {return}
       //console.log(JSON.stringify(message,null,1))
       
-      if (quoted) {
-        const keyId = message.message?.extendedTextMessage?.contextInfo?.stanzaId
+      if (quotedBody) {
+        const keyId = message.message.extendedTextMessage.contextInfo.stanzaId
         const cb = choices[keyId]
-        if (cb) {await handleReply(room, await cb(msgDebug))}
+        if (cb) {await handleReply(room, await cb(body)); return}
       }
       
       const response = await processCommand(room,sender,msgDebug,quoted,isAdmin,message);
