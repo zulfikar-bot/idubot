@@ -105,12 +105,47 @@ async function start() {
         if (cb) {await handleReply(room, await cb(body)); return}
       }
       
-      const response = await processCommand(room,sender,msgDebug,quoted,isAdmin,message);
+      const response = await processCommand(room,sender,body,quotedBody,isAdmin,message,quotedMessage);
       if (!response) {return} 
       await handleReply(room,response)
     }
   });
 }
+
+async function processCommand(room, sender, text, quoted, isAdmin, messageObject, quotedObject) {
+  if (!text.startsWith(prefix)) {return}
+  if (text.length <= 1) {return}
+
+  //if ((sender||room) !== owner+numberEnding) {return [`Bot sementara dalam perbaikan`]}
+
+  // This will only ping the app if needed, it will not always be triggered
+  const aliveTime = Date.now() - aliveStart //miliseconds
+  if (aliveTime > 4*60*1000) {
+    aliveStart = Date.now()
+    const test = await request('GET', 'https://idubot.glitch.me')
+    //await sock.sendMessage(owner+numberEnding, {text:`Test:\n${test}`})
+  }
+  
+  const inputs = text.split(" ");
+  const command = inputs[0].slice(1).toLowerCase();
+  if (!command) {return [`⚠ Mohon perhatikan penulisan perintah bot yang benar.\nContoh: ${prefix}menu`]}
+
+  const cmdItem = cmdList.find((c) => c.name === command);
+  if (!cmdItem) {return [`⚠ Perintah *${command}* tidak ada. Ketik ${prefix}menu untuk melihat daftar perintah yang ada.`]}
+
+  if (cmdItem.ownerOnly && (sender || room) !== owner + numberEnding) {return [`⚠ Hanya owner bot yang dapat menggunakan perintah tersebut`]}
+
+  if (cmdItem.adminOnly && isJidGroup(room)) {
+    if (!isAdmin && sender !== owner + numberEnding) {
+      return [`⚠ Hanya admin grup dan owner bot yang dapat menggunakan perintah tersebut`];
+    }
+  }
+
+  const params = inputs.slice(1);
+  sock.sendPresenceUpdate('composing',room)
+  return cmdList.find((c) => c.name === command).run(room, params, quoted, messageObject, quotedObject);
+}
+
 a
 // MY MODULES
 // Belajar Bahasa Asing
@@ -121,7 +156,6 @@ const codeliststring = codelist.join(", ");
 
 // OBJECTS
 const choices = {}
-
 
 // BOT CONTROL
 const prefix = "!";
@@ -453,53 +487,6 @@ async function getJson(url, options) {
   return (await request('GET', url, options, null, true)).response
 }
 
-async function processCommand(room, sender, msg, quoted, isAdmin, msgObject) {
-  if (!msg.startsWith(prefix)) {return}
-  if (msg.length <= 1) {return}
-
-  //if ((sender||room) !== owner+numberEnding) {return [`Bot sementara dalam perbaikan`]}
-
-  const aliveTime = Date.now() - aliveStart //miliseconds
-  
-  // This will only ping the app if needed, it will not always be triggered
-  if (aliveTime > 4*60*1000) {
-    aliveStart = Date.now()
-    const test = await request('GET', 'https://idubot.glitch.me')
-    //await sock.sendMessage(owner+numberEnding, {text:`Test:\n${test}`})
-  }
-  
-  const inputs = msg.split(" ");
-  const command = inputs[0].slice(1).toLowerCase();
-
-  if (!command) {
-    return [
-      `⚠ Mohon perhatikan penulisan perintah bot yang benar.\nContoh: ${prefix}menu`,
-    ];
-  }
-
-  const cmdItem = cmdList.find((c) => c.name === command);
-  if (!cmdItem) {
-    return [
-      `⚠ Perintah *${command}* tidak ada. Ketik ${prefix}menu untuk melihat daftar perintah yang ada.`,
-    ];
-  }
-
-  if (cmdItem.ownerOnly && (sender || room) !== owner + numberEnding) {
-    return [`⚠ Hanya owner bot yang dapat menggunakan perintah tersebut`];
-  }
-
-  if (cmdItem.adminOnly && isJidGroup(room)) {
-    if (!isAdmin && sender !== owner + numberEnding) {
-      return [
-        `⚠ Hanya admin grup dan owner bot yang dapat menggunakan perintah tersebut`,
-      ];
-    }
-  }
-
-  const params = inputs.slice(1);
-  sock.sendPresenceUpdate('composing',room)
-  return cmdList.find((c) => c.name === command).run(room, params, quoted, msgObject);
-}
 
 async function handleReply (room, response) {
   for (let r of response) {
