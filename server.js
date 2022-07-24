@@ -432,7 +432,7 @@ start();
 
 async function randomRequest(sources) {
   const picked = sources[randomInt(sources.length)]
-  const result = picked.format==='text'?(await request('GET', picked.url, picked.options)).response:(await getJson(picked.url))
+  const result = picked.format==='text'?(await request('GET', picked.url, picked.options)).response:(await getJson(picked.url, picked.options))
   return picked.f?picked.f(result):result
 }
 
