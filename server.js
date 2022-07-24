@@ -359,13 +359,17 @@ const cmdList = [
     return [{audio: filename}]
   }},
   {name: 'quote', info:'Quote bahasa Inggris', lang:'en', run:async()=>{
+    const sources = [
+      ['api.forismatic.com/api/1.0/?method=getQuote&lang=en&format=json', ''] 
+    ]
+    const {text, author} = await 
     let result
     switch (randomInt(2)) {
       case 0: {
-        result = (await request('GET','https://api.forismatic.com/api/1.0/?method=getQuote&lang=en&format=json', null, null, true)).response
+        result = await getJson('https://api.forismatic.com/api/1.0/?method=getQuote&lang=en&format=json')
         return [`_${result.quoteText}_\n- ${result.quoteAuthor||'Anonymous'}`.replace(/ +_/,'_')]
       } case 1: {
-        result = JSON.parse((await request('GET', 'https://api.fisenko.net/v1/quotes/en/random')).response)
+        result = await getJson('https://api.fisenko.net/v1/quotes/en/random')
         return [`_${result.text}_\n- ${result.author?.name||'Anonymous'}`.replace(/ +_/,'_')]
       }
     }
@@ -436,6 +440,10 @@ const cmdList = [
 ];
 
 start();
+
+async function getJson(url, options) {
+  return (await request('GET', url, options, null, true)).response
+}
 
 async function processCommand(room, sender, msg, quoted, isAdmin) {
   if (!msg.startsWith(prefix)) {return}
