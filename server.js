@@ -398,20 +398,18 @@ const cmdList = [
     
   }},
   {name:'imread', info:'Ambil teks dari gambar', run:async(r,p,q,m,qm)=>{
-    return ['Fitur ini sedang dikembangkan']
+    //return ['Fitur ini sedang dikembangkan']
     const lang = p[0]
     if (!lang || !bba.ocr.languages.includes(lang)) {
-      return [`Sertakan kode bahasa dari teks. Contoh: ${prefix}imread en\n\nKode:${bba.ocr.languages.map(l=>`${l.name} = ${l.code}`)}`]
+      return [
+        `Sertakan kode bahasa dari teks. Contoh: ${prefix}imread eng\n\nKode:${bba.ocr.languages.map(l=>`${l.name}(${l.code})`).join(', ')}`
+      ]
     }
     let imgMsg = m.imageMessage || qm?.imageMessage
     if (!imgMsg) {return ['Gunakan perintah sebagai caption dari gambar. Atau reply pesan berisi gambar.']}
-    const result = await submitForm({
-      host:'https://api.api-ninjas.com',
-      path:'/v1/imagetotext',
-      headers:{
-        'X-Api-Key':apiNinjasKey
-      },
-    }, [{key:'image', value:fs.createReadStream}])
+    const stream = await downloadMediaMessage(imgMsg, 'stream', {}, {reuploadRequest:sock.updateMediaMessage})
+    const result = await bba.ocr.extractText(stream, lang)
+    return [result]
   }},
 
   // Owner Only
