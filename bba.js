@@ -1,4 +1,4 @@
-const {download, request, request1} = require('./tools')
+const {download, request} = require('./tools')
 const {randomInt} = require('crypto')
 const fs = require('fs')
 const puppeteer = require('puppeteer')
@@ -6,6 +6,7 @@ const puppeteer = require('puppeteer')
 const agent = process.env.USER_AGENT
 const token = process.env.GITHUB_TOKEN
 const repo = 'aidulcandra/materi-bahasa-asing'
+const dataPath = './.data/bba'
 
 const defaultHeader = {
   'User-Agent': agent,
@@ -21,7 +22,7 @@ const lessonList = {
 
 const subbers = {}
 for (let c of Object.keys(lessonList)) {
-  const filename = './.data/bba/subbers/'+c+'.json'
+  const filename = dataPath+'/subbers/'+c+'.json'
   if (fs.existsSync(filename)) {subbers[c]=require(filename)}
   else {subbers[c]=[]}
 }

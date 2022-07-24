@@ -149,7 +149,6 @@ async function processCommand(room, sender, text, quoted, isAdmin, messageObject
   return cmdList.find((c) => c.name === command).run(room, params, quoted, messageObject, quotedObject);
 }
 
-a
 // MY MODULES
 // Belajar Bahasa Asing
 const bba = require("./bba");
