@@ -326,12 +326,13 @@ module.exports = {
       {name:'Chinese (Simplified)', code:'chs'}, {name:'Chinese (Traditional)', code:'cht'},  
     ],
     extractText: async(stream, language) => {
-      const result = await submitForm(
+      const {response} = await submitForm(
         {protocol:'https:', host:'api.ocr.space', path:'/parse/image', headers:{apikey:ocrKey}},
         {file:stream, language}, true
       )
-      if (result.isErroredOnProcessing) {return ['Error: '+result.ErrorMessage]}
-      return result.ParsedResults[0].ParsedText
+      if (response.isErroredOnProcessing) {return ['Error: '+response.ErrorMessage]}
+      console.log(response)
+      return response.ParsedResults[0].ParsedText
     } 
   }
 }

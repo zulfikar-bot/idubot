@@ -148,7 +148,6 @@ async function processCommand(room, sender, text, quoted, isAdmin, messageObject
 
   const params = inputs.slice(1);
   sock.sendPresenceUpdate('composing',room)
-  console.log(quotedKey)
   return cmdList.find((c) => c.name === command).run(room, params, quoted, messageObject, quotedMessage, quotedKey);
 }
 
@@ -410,7 +409,6 @@ const cmdList = [
     }
     let msgObj
     
-    console.log(qk)
     if (m.message?.imageMessage) {
       msgObj = m
     } else if (imgStore[qk]) {
