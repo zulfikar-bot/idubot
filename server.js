@@ -418,6 +418,10 @@ const cmdList = [
     ]
     
   }},
+  {name:'imread', info:'Ambil teks dari gambar', run:async(r,p,q)=>{
+    return ['Fitur ini sedang dikembangkan']
+    
+  }},
 
   // Owner Only
   { name: "showsub", ownerOnly: true, 
