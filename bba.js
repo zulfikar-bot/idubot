@@ -317,5 +317,13 @@ module.exports = {
         .replaceAll(/<a href.*<\/a>/g, '')
       return text
     } else {return result.status}
+  },
+  ocr:{
+    languages:[
+      {name:'English', code:'ara'}, {name:'Bulgarian', code:'ara'}, 
+    ],
+    extractText: async(stream, language) => {
+    
+    } 
   }
 }
