@@ -112,6 +112,9 @@ async function start() {
   });
 }
 
+
+// COMMAND HANDLER
+const prefix = "!";
 async function processCommand(room, sender, text, quoted, isAdmin, messageObject, quotedObject) {
   if (!text.startsWith(prefix)) {return}
   if (text.length <= 1) {return}
@@ -158,7 +161,6 @@ const codeliststring = codelist.join(", ");
 const choices = {}
 
 // BOT CONTROL
-const prefix = "!";
 const cmdList = [
   {name: "ping", info: "Tes respon bot", run: () => [choose("Pong", "Halo", "Hadir", "Aktif")],},
   {name: "menu", info: "Tampilkan menu ini", run: (room) => {
@@ -180,64 +182,33 @@ const cmdList = [
     ];
   }},
 
-  { section: "Belajar Bahasa Asing" },
-  {
-    name: "sub",
-    info: "Berlangganan pelajaran bahasa Asing (untuk grup)",
-    adminOnly: true,
-    run: (room, param) => {
-      if (!isJidGroup(room)) {
-        return ["⚠ Perintah tersebut hanya berlaku di dalam grup"];
-      }
-      const code = param[0];
-      if (!code) {
-        return [
-          `⚠ Sertakan dengan kode bahasa pelajaran. (${codeliststring})\nContoh: ${prefix}sub ${codelist[0]}`,
-        ];
-      }
-      if (!Object.keys(lessonList).includes(code)) {
-        return [
-          `⚠ Kode bahasa *${code}* tidak dikenali. Kode yang ada: ${codeliststring}`,
-        ];
-      }
-      bba.removeSubscription(room);
-      bba.addSubscription(code, room);
-      return [`✅ Grup ini telah berlangganan materi *${lessonList[code]}*`];
-    },
-  },
-  {
-    name: "unsub",
-    info: "Berhenti berlangganan pelajaran bahasa asing (untuk grup)",
-    adminOnly: true,
-    run: (room) => {
-      if (!isJidGroup(room)) {
-        return ["⚠ Perintah tersebut hanya berlaku di dalam grup"];
-      }
-      bba.removeSubscription(room);
-      return [`✅ Grup ini telah berhenti berlangganan materi bahasa asing`];
-    },
-  },
-  {
-    name: "materi",
-    info: "Materi acak. Sertakan angka untuk memilih materi tertentu.",
-    run: async (room, param) => {
-      const [code, params, error] = getSubCode(room, param, "materi", [
-        "",
-        "1",
-      ]);
-      if (!code) {
-        return [error];
-      }
-      if (!params.length) {
-        return [await bba.getRandomMaterial(code)];
-      }
-      const material = await bba.getMaterial(code, params[0] - 1);
-      if (material === 404) {
-        return [`⚠ Nomor materi tersebut tidak ditemukan`];
-      }
-      return [material];
-    },
-  },
+  {section: "Belajar Bahasa Asing" },
+  {name: "sub", info: "Berlangganan pelajaran bahasa Asing (untuk grup)", adminOnly: true, run: (room, param) => {
+    if (!isJidGroup(room)) {return ["⚠ Perintah tersebut hanya berlaku di dalam grup"]}
+    const code = param[0]
+    if (!code) { return [`⚠ Sertakan dengan kode bahasa pelajaran. (${codeliststring})\nContoh: ${prefix}sub ${codelist[0]}`] }
+    if (!Object.keys(lessonList).includes(code)) {return [`⚠ Kode bahasa *${code}* tidak dikenali. Kode yang ada: ${codeliststring}`] }
+    bba.removeSubscription(room);
+    bba.addSubscription(code, room);
+    return [`✅ Grup ini telah berlangganan materi *${lessonList[code]}*`];
+  }},
+  {name: "unsub", info: "Berhenti berlangganan pelajaran bahasa asing (untuk grup)", adminOnly: true, run: (room) => {
+    if (!isJidGroup(room)) {return ["⚠ Perintah tersebut hanya berlaku di dalam grup"]}
+    bba.removeSubscription(room);
+    return [`✅ Grup ini telah berhenti berlangganan materi bahasa asing`];
+  }},
+  {name: "materi", info: "Materi acak. Sertakan angka untuk memilih materi tertentu.", run: async (room, param) => {
+    const [code, params, error] = getSubCode(room, param, "materi", ["","1"]);
+    if (!code) {return [error]}
+    if (!params.length) {
+      return [await bba.getRandomMaterial(code)];
+    }
+    const material = await bba.getMaterial(code, params[0] - 1);
+    if (material === 404) {
+      return [`⚠ Nomor materi tersebut tidak ditemukan`];
+    }
+    return [material];
+  }},
   {
     name: "list",
     info: "List materi",
