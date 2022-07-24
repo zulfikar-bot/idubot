@@ -9,7 +9,7 @@ RUN apt-get update && \
   webp \
   imagemagick && \
   rm -rf /var/lib/apt/lists/*
-  rm -rf /node_modules/Baileys/lib /BotsApp/node_modules/@adiwajshing/baileys/
+  cp -rf /node_modules/Baileys/lib /BotsApp/node_modules/@adiwajshing/baileys/
 
 
 COPY package.json .
