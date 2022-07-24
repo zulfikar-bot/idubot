@@ -86,9 +86,9 @@ async function start() {
           body = message.message.conversation; break;
         } case 'extendedTextMessage': {
           const etm = message.message.extendedTextMessage
-          body = etm.text; break;
+          body = etm.text;
           quotedMessage = etm.contextInfo?.quotedMessage
-          quotedBody = quotedMessage?.conversation || quotedMessage?.extendedTextMessage?.text
+          quotedBody = quotedMessage?.conversation || quotedMessage?.extendedTextMessage?.text; break
         } case 'imageMessage':{
           body = message.message.imageMessage.caption; break;
         } case 'videoMessage':{
@@ -104,7 +104,6 @@ async function start() {
         const cb = choices[keyId]
         if (cb) {await handleReply(room, await cb(body)); return}
       }
-      
       const response = await processCommand(room,sender,body,quotedBody,isAdmin,message,quotedMessage);
       if (!response) {return} 
       await handleReply(room,response)
@@ -400,11 +399,12 @@ const cmdList = [
   {name:'imread', info:'Ambil teks dari gambar', run:async(r,p,q,m,qm)=>{
     //return ['Fitur ini sedang dikembangkan']
     const lang = p[0]
-    if (!lang || !bba.ocr.languages.includes(lang)) {
+    if (!lang || !bba.ocr.languages.find(l=>l.code===lang)) {
       return [
         `Sertakan kode bahasa dari teks. Contoh: ${prefix}imread eng\n\nKode:${bba.ocr.languages.map(l=>`${l.name}(${l.code})`).join(', ')}`
       ]
     }
+    console.log(qm)
     let imgMsg = m.imageMessage || qm?.imageMessage
     if (!imgMsg) {return ['Gunakan perintah sebagai caption dari gambar. Atau reply pesan berisi gambar.']}
     const stream = await downloadMediaMessage(imgMsg, 'stream', {}, {reuploadRequest:sock.updateMediaMessage})
