@@ -6,7 +6,7 @@ const fs = require("fs");
 const { randomInt } = require("crypto")
 
 const baileys = require("@adiwajshing/baileys");
-const { useMultiFileAuthState, isJidGroup } = baileys;
+const { useMultiFileAuthState, isJidGroup, downloadMediaMessage } = baileys;
 
 const port = process.env.PORT || 3000;
 const owner = process.env.OWNER;
@@ -418,7 +418,7 @@ const cmdList = [
     ]
     
   }},
-  {name:'imread', info:'Ambil teks dari gambar', run:async(r,p,q)=>{
+  {name:'imread', info:'Ambil teks dari gambar', run:async(r,p,q,m)=>{
     return ['Fitur ini sedang dikembangkan']
     const result = await submitForm({
       host:'https://api.api-ninjas.com',
@@ -495,7 +495,7 @@ async function processCommand(room, sender, msg, quoted, isAdmin) {
 
   const params = inputs.slice(1);
   sock.sendPresenceUpdate('composing',room)
-  return cmdList.find((c) => c.name === command).run(room, params, quoted);
+  return cmdList.find((c) => c.name === command).run(room, params, quoted, media);
 }
 
 async function handleReply (room, response) {
