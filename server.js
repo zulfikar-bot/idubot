@@ -360,20 +360,13 @@ const cmdList = [
   }},
   {name: 'quote', info:'Quote bahasa Inggris', lang:'en', run:async()=>{
     const sources = [
-      ['api.forismatic.com/api/1.0/?method=getQuote&lang=en&format=json', ''] 
+      ['https://api.forismatic.com/api/1.0/?method=getQuote&lang=en&format=json', (r)=>({text:r.quoteText, author:r.quoteAuthor})],
+      ['https://api.fisenko.net/v1/quotes/en/random', (r)=>({text:r.text, author:r.author?.name})]
     ]
-    const {text, author} = await 
-    let result
-    switch (randomInt(2)) {
-      case 0: {
-        result = await getJson('https://api.forismatic.com/api/1.0/?method=getQuote&lang=en&format=json')
-        return [`_${result.quoteText}_\n- ${result.quoteAuthor||'Anonymous'}`.replace(/ +_/,'_')]
-      } case 1: {
-        result = await getJson('https://api.fisenko.net/v1/quotes/en/random')
-        return [`_${result.text}_\n- ${result.author?.name||'Anonymous'}`.replace(/ +_/,'_')]
-      }
-    }
-    
+    const picked = sources[randomInt(sources.length)]
+    const result = await getJson(picked[0])
+    const {text, author} = picked[1](result)
+    return [`_${text}_\n- ${author||'Anonymous'}`.replace(/ +_/,'_')]
   }},
   {name: 'joke', info:'Lelucon bahasa Inggris', lang:'en', run:async()=>{
     let joke
