@@ -9,8 +9,9 @@
   "dependencies": {
     "@adiwajshing/baileys": "github:adiwajshing/baileys",
     "follow-redirects": "^1.15.1",
-    "puppeteer": "^15.3.2",
-    "form-data": "^4.0.0"
+    "form-data": "^4.0.0",
+    "node": "^18.5.0",
+    "puppeteer": "^15.3.2"
   },
   "engines": {
     "node": "16.x"
