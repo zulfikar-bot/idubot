@@ -168,7 +168,7 @@ const cmdList = [
     const isPrivate = !isJidGroup(room)
     const subCode = bba.getSubCode(room)
     return [
-      "*MENU IDUBOT*\n============\n\n" +
+      "*MENU Zulfikar *\n============\n\n" +
         cmdList
           .filter((c) => {
             return !c.ownerOnly && (isPrivate||(!c.lang||(subCode===c.lang)))
