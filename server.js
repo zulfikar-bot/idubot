@@ -16,23 +16,21 @@ const numberEnding = "@s.whatsapp.net";
 const happiKey = process.env.HAPPI
 const apiNinjasKey = process.env.APININJAS
 
-// M
-const bba = require("./bba");
-
+// VARIABLES
 let ready = false
-const server = http.createServer(async (_, res) => {
+
+// SERVER
+http.createServer(async (_, res) => {
   while (!ready) {await new Promise((resolve)=>setTimeout(resolve,1000))}
   res.end("Server is running");
   console.log('Server was pinged')
-})
-
-server.listen(port);
+}).listen(port);
 console.log("Server runs at port", port);
 
+// TEMP FOLDER
 fs.mkdirSync('./tmp', {recursive:true})
 
-const choices = {}
-
+// BAILEYS
 let sock
 const retryMap = {}
 const tempStore = {}
@@ -53,12 +51,9 @@ async function start() {
     if (update.connection === "close") {
       if (update.lastDisconnect.error.output.statusCode === 401) {
         console.log("UNATHORIZED");
-      } else {
-        start();
-      }
+      } else {start()}
     } else if (update.connection === "open") {
-      console.log("Connection open");
-      ready = true
+      console.log("Connection open"); ready = true
     }
     if (update.receivedPendingNotifications) {
       console.log("Ready");
@@ -83,11 +78,9 @@ async function start() {
         message.message?.extendedTextMessage?.contextInfo?.quotedMessage
           ?.extendedTextMessage?.text;
       const groupdata = isJidGroup(room)
-        ? await sock.groupMetadata(room)
-        : undefined;
-      const isAdmin = groupdata?.participants.find(
-        (p) => p.id === sender
-      ).admin;
+        ? await sock.groupMetadata(room) : undefined;
+      const isAdmin = groupdata?.participants.find((p) => p.id === sender).admin;
+      
       let msgDebug;
       if (message.message?.imageMessage) {
         msgDebug = "[IMAGE] " + message.message?.imageMessage.caption
@@ -116,11 +109,17 @@ async function start() {
     }
   });
 }
-
+a
+// MY MODULES
 // Belajar Bahasa Asing
+const bba = require("./bba");
 const lessonList = bba.getLessonList();
 const codelist = Object.keys(lessonList);
 const codeliststring = codelist.join(", ");
+
+// OBJECTS
+const choices = {}
+
 
 // BOT CONTROL
 const prefix = "!";
