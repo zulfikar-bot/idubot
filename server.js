@@ -360,21 +360,22 @@ const cmdList = [
   }},
   {name: 'quote', info:'Quote bahasa Inggris', lang:'en', run:async()=>{
     const sources = [
-      ['https://api.forismatic.com/api/1.0/?method=getQuote&lang=en&format=json', (r)=>({text:r.quoteText, author:r.quoteAuthor})],
-      ['https://api.fisenko.net/v1/quotes/en/random', (r)=>({text:r.text, author:r.author?.name})]
+      {url:'https://api.forismatic.com/api/1.0/?method=getQuote&lang=en&format=json', f:(r)=>[r.quoteText, r.quoteAuthor]},
+      {url:'https://api.fisenko.net/v1/quotes/en/random', f:(r)=>[r.text, r.author?.name]}
     ]
     const picked = sources[randomInt(sources.length)]
-    const result = await getJson(picked[0])
-    const {text, author} = picked[1](result)
+    const result = picked.format==='text'?(await request('GET', picked.url, picked.options)).response:(await getJson(picked.url))
+    const [text, author] = picked.f(result)
     return [`_${text}_\n- ${author||'Anonymous'}`.replace(/ +_/,'_')]
   }},
   {name: 'joke', info:'Lelucon bahasa Inggris', lang:'en', run:async()=>{
     const sources = [
-      ['https://v2.jokeapi.dev/joke/Miscellaneous,Pun?blacklistFlags=nsfw,religious,racist&format=txt'],
-      ['https://icanhazdadjoke.com/', null, {headers:{Accept:'text/plain'}}]
+      {url:'https://v2.jokeapi.dev/joke/Miscellaneous,Pun?blacklistFlags=nsfw,religious,racist&format=txt', format:'text'},
+      {url:'https://icanhazdadjoke.com/', o{headers:{Accept:'text/plain'}}, true]
     ]
     const picked = sources[randomInt(sources.length)]
-    const result = (await request('GET', picked[0], picked[2])).response
+    const result = picked[3]?(await request('GET', picked[0], picked[2])).response:(await getJson(picked[0]))
+    const joke = picked
     return [picked[1]?picked[1](result):result]
   }},
   {name: "fact", lang:"en", info:"Random fact", run:async()=>{
