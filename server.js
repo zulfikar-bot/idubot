@@ -34,6 +34,7 @@ fs.mkdirSync('./tmp', {recursive:true})
 let sock
 const retryMap = {}
 const tempStore = {}
+const imgStore = {}
 const getMessage = async (key) => {
   const {id} = key
   if (retryMap[id]===undefined) {retryMap[id] = 10}
@@ -90,7 +91,8 @@ async function start() {
           quotedMessage = etm.contextInfo?.quotedMessage
           quotedBody = quotedMessage?.conversation || quotedMessage?.extendedTextMessage?.text; break
         } case 'imageMessage':{
-          body = message.message.imageMessage.caption; break;
+          body = message.message.imageMessage.caption
+          imgStore[message.key.id] = message; break;
         } case 'videoMessage':{
           body = message.message.videoMessage.caption; break;
         }
@@ -145,7 +147,7 @@ async function processCommand(room, sender, text, quoted, isAdmin, messageObject
 
   const params = inputs.slice(1);
   sock.sendPresenceUpdate('composing',room)
-  return cmdList.find((c) => c.name === command).run(room, params, quoted, messageObject, quotedObject);
+  return cmdList.find((c) => c.name === command).run(room, params, quoted, quote);
 }
 
 // MY MODULES
@@ -396,7 +398,7 @@ const cmdList = [
     ]
     
   }},
-  {name:'imread', info:'Ambil teks dari gambar', run:async(r,p,q,m,qm)=>{
+  {name:'imread', info:'Ambil teks dari gambar', run:async(r,p,q,qk)=>{
     return ['Fitur ini sedang dikembangkan']
     const lang = p[0]
     if (!lang || !bba.ocr.languages.find(l=>l.code===lang)) {
