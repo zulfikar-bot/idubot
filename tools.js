@@ -1,3 +1,4 @@
+const FormData = require('form-data')
 const {http,https} = require('follow-redirects')
 const fs = require('fs')
 
@@ -34,23 +35,19 @@ module.exports = {
       } req.end()
     })
   },
-  request1 : (method, url, options, data) => {
-    return new Promise((resolve, reject) => {
-      const req = http.request(url, Object.assign({method},options), res => {
-        const data = []
-        res.on('data', chunk => {
-          data.push(chunk)
-        }).on('end', () => {
-          console.log(`${method} at ${url}:`, res.statusCode)
-          const fullData = Buffer.concat(data).toString()
-          resolve({status:res.statusCode, response:fullData})
-        }).on('error', (e)=>{
-          reject(e)
-        })
+  submitForm: (options, contents)=>{
+    return new Promise((resolve,reject))
+    const form = new FormData()
+    for (let c of contents) {
+      form.append(c.key, c.value)
+    }
+    form.submit(options, (e,r)=>{
+      let data = ''
+      r.on('data', (chunk)=>{
+        data += chunk
+      }).on('end', ()=>{
+        console.log(data)
       })
-      if (['POST', 'PUT'].includes(method)) {
-        req.write(data)
-      } req.end()
     })
-  },
+  }
 }
