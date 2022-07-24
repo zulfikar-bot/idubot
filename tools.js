@@ -38,8 +38,8 @@ module.exports = {
   submitForm: (options, contents, parse)=>{
     return new Promise((resolve,reject) => {
       const form = new FormData()
-      for (let c of Object.keys(contents)) {
-        form.append(c, contents[c])
+      for (let c of contents) {
+        form.append(c.key, c.value, c.filename)
       }
       form.submit(options, (e,r)=>{
         let data = ''

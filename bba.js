@@ -328,10 +328,12 @@ module.exports = {
     extractText: async(stream, language) => {
       const {response} = await submitForm(
         {protocol:'https:', host:'api.ocr.space', path:'/parse/image', headers:{apikey:ocrKey}},
-        {file:stream, language}, true
+        [
+          {key:'file', value:stream, filename:'extract.jpeg'},
+          {key:'language', value:language}
+        ], true
       )
-      if (response.isErroredOnProcessing) {return ['Error: '+response.ErrorMessage]}
-      console.log(response)
+      if (response.isErroredOnProcessing) {return ['Error: '+response.ErrorMessage.join('\n')]}
       return response.ParsedResults[0].ParsedText
     } 
   }
