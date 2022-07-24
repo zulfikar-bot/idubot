@@ -89,10 +89,12 @@ async function start() {
           const etm = message.message.extendedTextMessage
           body = etm.text;
           quotedMessage = etm.contextInfo?.quotedMessage
+          quotedKey = etm.contextInfo?.stanzaId
           quotedBody = quotedMessage?.conversation || quotedMessage?.extendedTextMessage?.text; break
         } case 'imageMessage':{
           body = message.message.imageMessage.caption
-          imgStore[message.key.id] = message; break;
+          imgStore[message.key.id] = message; 
+          console.log(Object.keys(imgStore)); break;
         } case 'videoMessage':{
           body = message.message.videoMessage.caption; break;
         }
@@ -102,7 +104,6 @@ async function start() {
       //console.log(JSON.stringify(message,null,1))
       
       if (quotedBody) {
-        quotedKey = message.message.extendedTextMessage.contextInfo.stanzaId
         const cb = choices[quotedKey]
         if (cb) {await handleReply(room, await cb(body)); return}
       }
@@ -147,6 +148,7 @@ async function processCommand(room, sender, text, quoted, isAdmin, messageObject
 
   const params = inputs.slice(1);
   sock.sendPresenceUpdate('composing',room)
+  console.log(quotedKey)
   return cmdList.find((c) => c.name === command).run(room, params, quoted, messageObject, quotedMessage, quotedKey);
 }
 
@@ -399,7 +401,7 @@ const cmdList = [
     
   }},
   {name:'imread', info:'Ambil teks dari gambar', run:async(r,p,q,m,qm,qk)=>{
-    return ['Fitur ini sedang dikembangkan']
+    //return ['Fitur ini sedang dikembangkan']
     const lang = p[0]
     if (!lang || !bba.ocr.languages.find(l=>l.code===lang)) {
       return [
@@ -407,12 +409,15 @@ const cmdList = [
       ]
     }
     let msgObj
+    
+    console.log(qk)
     if (m.message?.imageMessage) {
       msgObj = m
     } else if (imgStore[qk]) {
       msgObj = imgStore[qk]
     } else if (qm) {
-      return ['']
+      return ['Gambar tersebut sudah terhapus dari memori bot. Silakan diupload ulang.']
+    } else {
       return ['Gunakan perintah sebagai caption dari gambar. Atau reply pesan berisi gambar.']
     }
     const stream = await downloadMediaMessage(msgObj, 'stream', {}, {reuploadRequest:sock.updateMediaMessage})
