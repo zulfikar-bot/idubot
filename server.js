@@ -369,15 +369,13 @@ const cmdList = [
     return [`_${text}_\n- ${author||'Anonymous'}`.replace(/ +_/,'_')]
   }},
   {name: 'joke', info:'Lelucon bahasa Inggris', lang:'en', run:async()=>{
-    let joke
-    switch (randomInt(2)) {
-      case 0: {
-        joke = (await request('GET', 'https://v2.jokeapi.dev/joke/Miscellaneous,Pun?blacklistFlags=nsfw,religious,racist&format=txt')).response; break
-      } case 1: {
-        joke = (await request('GET', 'https://icanhazdadjoke.com/', {headers:{'Accept':'text/plain'}})).response; break
-      }
-    }
-    return[joke]
+    const sources = [
+      ['https://v2.jokeapi.dev/joke/Miscellaneous,Pun?blacklistFlags=nsfw,religious,racist&format=txt'],
+      ['https://icanhazdadjoke.com/', null, {headers:{Accept:'text/plain'}}]
+    ]
+    const picked = sources[randomInt(sources.length)]
+    const result = (await request('GET', picked[0], picked[2])).response
+    return [picked[1]?picked[1](result):result]
   }},
   {name: "fact", lang:"en", info:"Random fact", run:async()=>{
     switch (randomInt(2)) {
