@@ -81,7 +81,7 @@ async function start() {
       
       const msgType = Object.keys(message.message)[0]
       
-      let body = '', quotedBody, quotedMessage;
+      let body = '', quotedBody, quotedMessage, quotedKey;
       switch (msgType) {
         case 'conversation':{
           body = message.message.conversation; break;
@@ -102,11 +102,11 @@ async function start() {
       //console.log(JSON.stringify(message,null,1))
       
       if (quotedBody) {
-        const keyId = message.message.extendedTextMessage.contextInfo.stanzaId
-        const cb = choices[keyId]
+        quotedKey = message.message.extendedTextMessage.contextInfo.stanzaId
+        const cb = choices[quotedKey]
         if (cb) {await handleReply(room, await cb(body)); return}
       }
-      const response = await processCommand(room,sender,body,quotedBody,isAdmin,message,quotedMessage);
+      const response = await processCommand(room,sender,body,quotedBody,isAdmin, message, quotedMessage, quotedKey);
       if (!response) {return} 
       await handleReply(room,response)
     }
@@ -116,7 +116,7 @@ async function start() {
 
 // COMMAND HANDLER
 const prefix = "!";
-async function processCommand(room, sender, text, quoted, isAdmin, messageObject, quotedObject) {
+async function processCommand(room, sender, text, quoted, isAdmin, messageObject, quotedMessage, quotedKey) {
   if (!text.startsWith(prefix)) {return}
   if (text.length <= 1) {return}
 
@@ -147,7 +147,7 @@ async function processCommand(room, sender, text, quoted, isAdmin, messageObject
 
   const params = inputs.slice(1);
   sock.sendPresenceUpdate('composing',room)
-  return cmdList.find((c) => c.name === command).run(room, params, quoted, quote);
+  return cmdList.find((c) => c.name === command).run(room, params, quoted, messageObject, quotedMessage, quotedKey);
 }
 
 // MY MODULES
@@ -398,7 +398,7 @@ const cmdList = [
     ]
     
   }},
-  {name:'imread', info:'Ambil teks dari gambar', run:async(r,p,q,qk)=>{
+  {name:'imread', info:'Ambil teks dari gambar', run:async(r,p,q,m,qm,qk)=>{
     return ['Fitur ini sedang dikembangkan']
     const lang = p[0]
     if (!lang || !bba.ocr.languages.find(l=>l.code===lang)) {
@@ -407,11 +407,12 @@ const cmdList = [
       ]
     }
     let msgObj
-    if (m.imageMessage) {
+    if (m.message?.imageMessage) {
       msgObj = m
-    } else if (qm.imageMessage) {
-      msgObj = qm
-    } else {
+    } else if (imgStore[qk]) {
+      msgObj = imgStore[qk]
+    } else if (qm) {
+      return ['']
       return ['Gunakan perintah sebagai caption dari gambar. Atau reply pesan berisi gambar.']
     }
     const stream = await downloadMediaMessage(msgObj, 'stream', {}, {reuploadRequest:sock.updateMediaMessage})
