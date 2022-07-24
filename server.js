@@ -379,9 +379,9 @@ const cmdList = [
     const sources = [
       {url:'https://uselessfacts.jsph.pl/random.json?language=en', f:(r)=>r.text},
       {url:'https://asli-fun-fact-api.herokuapp.com/', f:(r)=>r.data.fact},
-      {url:'https://api.api-ninjas.com/v1/facts', options:{headers:{'X-Api-Key':APININJAS}}}
+      {url:'https://api.api-ninjas.com/v1/facts', options:{headers:{'X-Api-Key':apiNinjasKey}}, f:(r)=>r[0].fact}
     ]
-    const fact = await randomRequest(sources)
+    const fact =  await randomRequest(sources)
     return [fact]
   }},
   {name: "advice", lang:'en', info:'Random advice', run:async()=>{
