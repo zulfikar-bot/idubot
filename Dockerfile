@@ -9,7 +9,6 @@ RUN apt-get update && \
   webp \
   imagemagick && \
   rm -rf /var/lib/apt/lists/*
-  git clone git+https://github.com/adiwajshing/Baileys.git
 
 
 COPY package.json .
